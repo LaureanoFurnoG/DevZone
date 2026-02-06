@@ -1,12 +1,14 @@
-package main
+package migrateDB
 
 import (
 	"github.com/laureano/devzone/database/models"
-	"github.com/laureano/devzone/initializers"
+	"gorm.io/gorm"
 )
-
-func main() {
-	initializers.DB.AutoMigrate(&models.Categories{})
-	initializers.DB.AutoMigrate(&models.Post{})
-	initializers.DB.AutoMigrate(&models.Relation_categories{})
+//migrate tables, receive the db
+func Migrate(db *gorm.DB) error{
+	return db.AutoMigrate(
+		&models.Categories{},
+		&models.Post{},
+		&models.Relation_categories{},
+	)
 }
