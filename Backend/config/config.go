@@ -41,7 +41,7 @@ func Load() *Config {
 		DBHost:     "localhost",
 		DBPort:     dbPort,
 		DBUser:     "postgres",
-		DBPassword: "Laureano",
+		DBPassword: "secret",
 		DBName:     "devzone",
 	}
 }
