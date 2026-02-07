@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"os"
 	"os/signal"
 	"syscall"
 	"time"
@@ -21,8 +20,8 @@ func main() {
 	if err != nil {
 		log.Fatalf(err.Error())
 	}
-	
-	if err := migrateDB.Migrate(dbGorm); err != nil{
+
+	if err := migrateDB.Migrate(dbGorm); err != nil {
 		log.Fatal(err)
 	}
 
@@ -35,7 +34,7 @@ func main() {
 	defer stop()
 
 	go func() {
-		if err := e.Start(fmt.Sprintf(":%s", os.Getenv("SERVER_PORT"))); err != nil {
+		if err := e.Start(fmt.Sprintf(":%d", cfg.ServerPort)); err != nil {
 			log.Printf("shutting down the server")
 		}
 	}()
