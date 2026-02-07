@@ -6,8 +6,9 @@ import (
 )
 
 type Post struct {
-	ID      int            `json:"id"`
-	Id_user uuid.UUID      `json:"id_user"`
-	Title   string         `json:"title"`
-	Content datatypes.JSON `json:"content"`
+	ID         uint            `json:"id"`
+	Id_user    uuid.UUID      `json:"id_user"`
+	Title      string         `json:"title"`
+	Content    datatypes.JSON `json:"content"`
+	Categories []int          `json:"categories"` 
 }

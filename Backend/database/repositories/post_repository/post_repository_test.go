@@ -1,6 +1,7 @@
 package postrepository
 
 import (
+	"context"
 	"encoding/json"
 	"testing"
 
@@ -10,24 +11,25 @@ import (
 	"github.com/laureano/devzone/config"
 	"github.com/laureano/devzone/database/connect"
 	"gorm.io/datatypes"
-	"gorm.io/gorm"
 )
 
 func TestRepositoryPost(t *testing.T) {
-	t.Parallel()
+	cfg := config.Load()
+	db, err := connect.ConnectToDB(cfg)
+	require.NoError(t, err)
 
-	postRepo := NewPostRepository()
+	postRepo := NewPostRepository(db)
 	type ContentJson struct {
 		Example string `json:"example"`
 	}
 
 	tests := []struct {
 		nameCase string
-		test     func(t *testing.T, db *gorm.DB)
+		test     func(t *testing.T)
 	}{
 		{
 			nameCase: "SuccessCreate",
-			test: func(t *testing.T, db *gorm.DB) {
+			test: func(t *testing.T) {
 				userID := uuid.New()
 
 				content := ContentJson{
@@ -44,8 +46,8 @@ func TestRepositoryPost(t *testing.T) {
 					Content: datatypes.JSON(bytes),
 				}
 
-				err = postRepo.CreatePost(db, &newPost)
-
+				err = postRepo.CreatePost(context.Background(), db, &newPost)
+				require.NoError(t, err)
 			},
 		},
 	}
@@ -53,14 +55,7 @@ func TestRepositoryPost(t *testing.T) {
 		t.Run("case", func(caseT *testing.T) {
 			caseT.Run(tcase.nameCase, func(test *testing.T) {
 				test.Parallel()
-				cfg := config.Load()
-
-				db, err := connect.ConnectToDB(cfg)
-				if err != nil {
-					test.Error(err)
-				}
-
-				tcase.test(test, db)
+				tcase.test(test)
 			})
 		})
 	}
