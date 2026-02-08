@@ -15,7 +15,7 @@ func NewHTTPHandler(g *echo.Group, svc Service) {
 }
 
 type createPostRequest struct {
-	Categories []int          `json:"categories"`
+	Categories []uint          `json:"categories"`
 	Id_user    uuid.UUID      `json:"id_user"`
 	Title      string         `json:"title"`
 	Content    datatypes.JSON `json:"content"`
