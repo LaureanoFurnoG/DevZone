@@ -11,7 +11,7 @@ import (
 )
 
 type Service interface {
-	CreatePost(ctx context.Context, categories []int, Id_user uuid.UUID, title string, content datatypes.JSON) error
+	CreatePost(ctx context.Context, categories []uint, Id_user uuid.UUID, title string, content datatypes.JSON) error
 }
 
 type service struct {
@@ -26,19 +26,24 @@ func NewService(db *gorm.DB, repo post.RepositoryDB) Service {
 	}
 }
 
-func (s *service) CreatePost(ctx context.Context, categories []int, Id_user uuid.UUID, title string, content datatypes.JSON) error {
+func (s *service) CreatePost(ctx context.Context, categories []uint, Id_user uuid.UUID, title string, content datatypes.JSON) error {
 	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		postDAO := &post.Post{
-			Id_user: Id_user,
-			Title:   title,
-			Content: content,
+			Id_user:    Id_user,
+			Title:      title,
+			Content:    content,
+			Categories: categories,
 		}
 
 		err := s.repository.CreatePost(ctx, tx, postDAO)
 		if err != nil {
 			return err
 		}
-		fmt.Println(postDAO.ID)
+		fmt.Println("acaaaaaaaa", postDAO.ID)
+		err = s.repository.AddCategorieInPost(ctx, tx, postDAO)
+		if err != nil {
+			return err
+		}
 		return nil
 	})
 }

@@ -20,9 +20,9 @@ type Post struct {
 
 type Relation_categories struct {
 	gorm.Model
-	Id_post int  `gorm:"id_post"`
+	Id_post uint  `gorm:"id_post"`
 	Post    Post `gorm:"foreignKey:Id_post;references:ID"`
 
-	Id_categorie_tag int        `gorm:"id_categorie_tag"`
+	Id_categorie_tag uint        `gorm:"id_categorie_tag"`
 	Categorie        Categories `gorm:"foreignKey:Id_categorie_tag;references:ID"`
 }

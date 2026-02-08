@@ -2,6 +2,8 @@ package postrepository
 
 import (
 	"context"
+	"fmt"
+
 	"github.com/laureano/devzone/app/post/post"
 	"github.com/laureano/devzone/database/models"
 	"gorm.io/gorm"
@@ -27,5 +29,20 @@ func (r *postsRepository) CreatePost(ctx context.Context, tx *gorm.DB, post *pos
 	}
 
 	post.ID = postDAO.ID
+	return nil
+}
+
+func (r *postsRepository) AddCategorieInPost(ctx context.Context, tx *gorm.DB, post *post.Post) error {
+	for i := range post.Categories {
+		postCategoriesDAO := models.Relation_categories{
+			Id_post:          post.ID,
+			Id_categorie_tag: post.Categories[i],
+		}
+
+		if err := tx.WithContext(ctx).Create(&postCategoriesDAO).Error; err != nil {
+			return err
+		}
+		fmt.Print(post.Categories)
+	}
 	return nil
 }
