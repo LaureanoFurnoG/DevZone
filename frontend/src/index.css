@@ -1,0 +1,8 @@
+@import '../@/styles/_variables.scss';
+@import '../@/styles/_keyframe-animations.scss';
+
+@import "tailwindcss";
+
+body {
+  margin: 0;
+}
