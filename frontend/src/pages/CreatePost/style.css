@@ -1,0 +1,8 @@
+.simple-editor-wrapper{
+    width: 100%;
+    background-color: #1D1D1D;
+    height: 100%;
+    border-radius: 10px;
+}
+
+.simple-editor-wrapper *{color: white;}
