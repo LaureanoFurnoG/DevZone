@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type RepositoryDB interface {
+type RepositoryDB_Post interface {
 	CreatePost(ctx context.Context, tx *gorm.DB, post *Post) error
 	AddCategorieInPost(ctx context.Context, tx *gorm.DB, post *Post) error
 }

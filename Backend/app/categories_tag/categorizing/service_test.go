@@ -1,4 +1,4 @@
-package posting
+package categorizing
 
 import (
 	"context"
@@ -6,16 +6,20 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
+	"github.com/laureano/devzone/app/categories_tag/category"
 	"github.com/laureano/devzone/app/post/post"
+	"github.com/laureano/devzone/app/post/posting"
 	"github.com/laureano/devzone/config"
 	"github.com/laureano/devzone/database/connect"
+	mockCategory "github.com/laureano/devzone/mocks/repositories/db/category"
 	mockPost "github.com/laureano/devzone/mocks/repositories/db/post"
 	"gorm.io/datatypes"
 )
 
-func TestCreatePosting(t *testing.T) {
+func TestListCategories(t *testing.T) {
 	t.Parallel()
 	cfg := config.Load()
 	ctx := context.Background()
@@ -24,8 +28,11 @@ func TestCreatePosting(t *testing.T) {
 
 	mockCtrl := gomock.NewController(t)
 
+	mockCategory := mockCategory.NewMockRepositoryDB_Category(mockCtrl)
+	svc := NewService(db, mockCategory)
+
 	mockPost := mockPost.NewMockRepositoryDB_Post(mockCtrl)
-	svc := NewService(db, mockPost)
+	svcPost := posting.NewService(db, mockPost)
 
 	type ContentJson struct {
 		Example string `json:"example"`
@@ -36,13 +43,12 @@ func TestCreatePosting(t *testing.T) {
 		test     func(t *testing.T)
 	}{
 		{
-			nameCase: "SuccessCreate",
+			nameCase: "SuccessListCategories",
 			test: func(t *testing.T) {
 				content := ContentJson{
 					Example: "test2",
 				}
 
-				//convert
 				bytes, err := json.Marshal(content)
 				require.NoError(t, err)
 
@@ -52,24 +58,34 @@ func TestCreatePosting(t *testing.T) {
 					Content:    datatypes.JSON(bytes),
 					Categories: []uint{1, 2, 3},
 				}
+
 				mockPost.EXPECT().
 					CreatePost(gomock.Any(), gomock.Any(), gomock.Any()).
 					Times(1).
 					Return(nil)
-				
+
 				mockPost.EXPECT().
 					AddCategorieInPost(gomock.Any(), gomock.Any(), gomock.Any()).
 					Times(1).
 					Return(nil)
 
-				err = svc.CreatePost(ctx, postDAO.Categories, postDAO.Id_user, postDAO.Title, postDAO.Content)
+				err = svcPost.CreatePost(ctx, postDAO.Categories, postDAO.Id_user, postDAO.Title, postDAO.Content)
 				require.NoError(t, err)
+
+				mockCategory.EXPECT().
+					ListCategories(gomock.Any(), gomock.Any()).
+					Times(1).
+					Return([]category.Category{}, nil)
+
+				categories, err := svc.ListCategories(ctx)
+				require.NoError(t, err)
+				require.NotNil(t, categories)
 			},
 		},
 	}
 	for _, tcase := range tests {
-		t.Run("case", func(caseT *testing.T) {
-			caseT.Run(tcase.nameCase, func(test *testing.T) {
+		t.Run("case", func(t *testing.T) {
+			t.Run(tcase.nameCase, func(test *testing.T) {
 				test.Parallel()
 				tcase.test(test)
 			})

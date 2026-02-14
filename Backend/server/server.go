@@ -5,9 +5,11 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/laureano/devzone/app/categories_tag/categorizing"
 	"github.com/laureano/devzone/app/post/posting"
 	"github.com/laureano/devzone/config"
 	"github.com/laureano/devzone/database/connect"
+	categoryrepository "github.com/laureano/devzone/database/repositories/category_repository"
 	postrepository "github.com/laureano/devzone/database/repositories/post_repository"
 )
 
@@ -30,8 +32,11 @@ func NewServer(cfg *config.Config) (*echo.Echo, error) {
 	postRepositoryDB := postrepository.NewPostRepository(db)
 	postService := posting.NewService(db, postRepositoryDB)
 
-	posting.NewHTTPHandler(r, postService)
+	categoryRepositoryDB := categoryrepository.NewCategoryRepository(db)
+	categoryService := categorizing.NewService(db, categoryRepositoryDB)
 
+	posting.NewHTTPHandler(r, postService)
+	categorizing.NewHTTPHandler(r, categoryService)
 	log.Printf("Server listening on port %v", cfg.ServerPort)
 	return e, nil
 }
