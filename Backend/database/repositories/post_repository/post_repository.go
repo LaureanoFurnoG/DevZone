@@ -2,7 +2,6 @@ package postrepository
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/laureano/devzone/app/post/post"
 	"github.com/laureano/devzone/database/models"
@@ -13,7 +12,7 @@ type postsRepository struct {
 	db *gorm.DB
 }
 
-func NewPostRepository(db *gorm.DB) post.RepositoryDB {
+func NewPostRepository(db *gorm.DB) post.RepositoryDB_Post {
 	return &postsRepository{db: db}
 }
 
@@ -42,7 +41,6 @@ func (r *postsRepository) AddCategorieInPost(ctx context.Context, tx *gorm.DB, p
 		if err := tx.WithContext(ctx).Create(&postCategoriesDAO).Error; err != nil {
 			return err
 		}
-		fmt.Print(post.Categories)
 	}
 	return nil
 }

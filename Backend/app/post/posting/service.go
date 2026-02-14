@@ -2,7 +2,6 @@ package posting
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/laureano/devzone/app/post/post"
@@ -15,11 +14,11 @@ type Service interface {
 }
 
 type service struct {
-	repository post.RepositoryDB
+	repository post.RepositoryDB_Post
 	db         *gorm.DB
 }
 
-func NewService(db *gorm.DB, repo post.RepositoryDB) Service {
+func NewService(db *gorm.DB, repo post.RepositoryDB_Post) Service {
 	return &service{
 		repository: repo,
 		db:         db,
@@ -39,7 +38,6 @@ func (s *service) CreatePost(ctx context.Context, categories []uint, Id_user uui
 		if err != nil {
 			return err
 		}
-
 		err = s.repository.AddCategorieInPost(ctx, tx, postDAO)
 		if err != nil {
 			return err
