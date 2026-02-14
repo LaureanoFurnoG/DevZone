@@ -29,7 +29,7 @@ type SearchProps = GetProps<typeof Input.Search>;
 const MainLayout: React.FC = () => {
     const { Search } = Input;
     
-    const [collapsed, setCollapsed] = useState(false);
+    const [collapsed, setCollapsed] = useState(true);
     const {
         token: { colorBgContainer },
     } = theme.useToken();
@@ -68,7 +68,7 @@ const MainLayout: React.FC = () => {
 
     return (
         <Layout className='!h-screen'>
-        <Sider className='!bg-[#1D1D1D] !border-[#ffffff] !border-2 !border-l-0 !border-b-0 !border-t-0' trigger={null} collapsible collapsed={collapsed} width={250}>
+        <Sider className={`!bg-[#1D1D1D] !border-[#ffffff] !border-2 !border-l-0 !border-b-0 !border-t-0 ${collapsed ? "hidden sm:block !border-0" : "!w-full"}`} trigger={null} collapsible collapsed={collapsed} width={250}>
             <Menu className='!bg-[#1D1D1D]'
             theme="dark"
             mode="inline"
@@ -149,8 +149,8 @@ const MainLayout: React.FC = () => {
             </div>
         </Sider>
         <Layout className='!bg-[#303030]'>
-            <Header className='!flex !w-full !justify-between !bg-[#1D1D1D] !border !border-[#ffffff] !border-2 !border-t-0 !border-r-0' style={{ padding: 0, background: colorBgContainer }}>
-                <div className='!w-[80%]'>
+            <Header className={`!flex !w-full !justify-between !bg-[#1D1D1D] !border !border-[#ffffff] !border-2 !border-t-0 !border-r-0 ${collapsed ? "!border-l-0" : ""}`} style={{ padding: 0, background: colorBgContainer }}>
+                <div className='!w-[100%] flex items-center'>
                     <Button
                         className='!text-white'
                         type="text"
@@ -162,7 +162,7 @@ const MainLayout: React.FC = () => {
                         height: 64,
                         }}
                     />
-                    <Search placeholder="input search text" onSearch={onSearch} className='search-Header' style={{ width: '60%' }} />
+                    <Search placeholder="input search text" onSearch={onSearch} className={`search-Header  ${collapsed ? "!w-[75%]" : "!hidden sm:!flex"}`} style={{ width: '60%' }} />
                 </div>
                 {isAuthenticated &&
                     <Button

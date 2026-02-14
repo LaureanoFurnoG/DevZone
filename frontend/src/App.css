@@ -22,8 +22,8 @@
     rgba(55, 22, 71, 1) 100%
   );
 }
-.ant-menu-sub{
-    background-color: #1D1D1D !important;
+.ant-menu-sub {
+  background-color: #1d1d1d !important;
 }
 .ant-layout-sider.ant-layout-sider-collapsed
   .ant-menu-item[data-menu-id="rc-menu-uuid-0"]
@@ -38,16 +38,17 @@
   width: 100% !important;
 }
 
-.search-Header input, .search-Header button{
-    background-color: #303030 !important;
+.search-Header input,
+.search-Header button {
+  background-color: #303030 !important;
 }
 
-.search-Header button{
-    color: white !important;
+.search-Header button {
+  color: white !important;
 }
-.search-Header input::placeholder{
-    color: gray;
+.search-Header input::placeholder {
+  color: gray;
 }
-.search-Header input{
-    color: white;
+.search-Header input {
+  color: white;
 }

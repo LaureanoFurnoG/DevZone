@@ -1,8 +1,19 @@
 .simple-editor-wrapper{
     width: 100%;
     background-color: #1D1D1D;
-    height: 100%;
+    height: 80%;
     border-radius: 10px;
 }
 
 .simple-editor-wrapper *{color: white;}
+
+.darkmode{
+    display: none;
+}
+.sel-inp .ant-select *{
+    color: white;
+}
+.ant-select-dropdown *{
+    color: white !important;
+    background-color: #1D1D1D !important;
+}
