@@ -7,6 +7,8 @@ const CreatePost = () =>{
     const editorRef = useRef<any>(null)
     const options: SelectProps['options'] = [];
     const [json, setPostJson] = useState()
+    const [categories, setCategories] = useState<string | string[]>(null)
+
     for (let i = 10; i < 36; i++) {
         options.push({
             value: i.toString(36) + i,
@@ -15,7 +17,7 @@ const CreatePost = () =>{
     }
 
     const handleChange = (value: string | string[]) => {
-    console.log(`Selected: ${value}`);
+        setCategories(value)
     };
 
     const getJSON = () =>{
@@ -32,7 +34,7 @@ const CreatePost = () =>{
     return(
         <>
             <div className='sel-inp flex gap-5 justify-between mb-10'>
-                <Input className='!w-[50%] !bg-[#1D1D1D] !text-white !placeholder-[#9e9e9e]' placeholder="Title" />
+                <Input id='Title-input' className='!w-[50%] !bg-[#1D1D1D] !text-white !placeholder-[#9e9e9e]' placeholder="Title" />
                 <Select className='!w-[20%] !bg-[#1D1D1D] !text-white !placeholder-[#9e9e9e]'
                     mode="multiple"
                     placeholder="Please select"

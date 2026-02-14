@@ -39,7 +39,7 @@ func (s *service) CreatePost(ctx context.Context, categories []uint, Id_user uui
 		if err != nil {
 			return err
 		}
-		fmt.Println("acaaaaaaaa", postDAO.ID)
+
 		err = s.repository.AddCategorieInPost(ctx, tx, postDAO)
 		if err != nil {
 			return err
