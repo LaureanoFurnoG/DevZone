@@ -14,7 +14,10 @@ export const AuthProvider = ({children}: {children: React.ReactNode}) => {
             onLoad: "check-sso",
             pkceMethod: "S256",
             checkLoginIframe: false,
-        }).then((authenticated) =>{
+            silentCheckSsoRedirectUri:
+            window.location.origin + "/silent-check-sso.html",
+        })
+        .then((authenticated) =>{
             setAuthenticated(authenticated)
             setToken(keycloak.token)
             if (keycloak.tokenParsed){
@@ -22,7 +25,8 @@ export const AuthProvider = ({children}: {children: React.ReactNode}) => {
                 const lastname = keycloak.tokenParsed.lastname
                 const email = keycloak.tokenParsed.email
                 const token = keycloak.token
-                setMe({name, email, lastname, token})
+                const sub = keycloak.subject
+                setMe({name, email, lastname, token, sub})
             }
             setLoading(false)
         }).catch(() =>{

@@ -27,6 +27,13 @@ func NewServer(cfg *config.Config) (*echo.Echo, error) {
 	e.Use(middleware.Recover())
 	e.Use(middleware.Logger())
 
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"http://localhost:5173"},
+		AllowMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders: []string{"Content-Type", "Authorization"},
+		MaxAge:       300,
+	}))
+	
 	r := e.Group("/devzone-api")
 
 	postRepositoryDB := postrepository.NewPostRepository(db)

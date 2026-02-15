@@ -52,3 +52,7 @@
 .search-Header input {
   color: white;
 }
+
+.ant-notification-notice{
+  border: 1px solid white !important;
+}
