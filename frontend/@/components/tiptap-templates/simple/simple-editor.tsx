@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react"
 import { EditorContent, EditorContext, useEditor } from "@tiptap/react"
 
 // --- Tiptap Core Extensions ---
@@ -73,7 +73,6 @@ import { handleImageUpload, MAX_FILE_SIZE } from "../../../../@/lib/tiptap-utils
 // --- Styles ---
 import "../../../../@/components/tiptap-templates/simple/simple-editor.scss"
 
-import content from "../../../../@/components/tiptap-templates/simple/data/content.json"
 
 const MainToolbarContent = ({
   onHighlighterClick,
@@ -146,6 +145,9 @@ const MainToolbarContent = ({
       <Spacer />
 
       {isMobile && <ToolbarSeparator />}
+      <ToolbarGroup className="darkmode">
+        <ThemeToggle />
+      </ToolbarGroup>
     </>
   )
 }
@@ -176,10 +178,11 @@ const MobileToolbarContent = ({
     ) : (
       <LinkContent />
     )}
+    
   </>
 )
 
-export function SimpleEditor() {
+const SimpleEditor = forwardRef((props, ref) => {
   const isMobile = useIsBreakpoint()
   const { height } = useWindowSize()
   const [mobileView, setMobileView] = useState<"main" | "highlighter" | "link">(
@@ -224,7 +227,6 @@ export function SimpleEditor() {
         onError: (error) => console.error("Upload failed:", error),
       }),
     ],
-    content,
   })
 
   const rect = useCursorVisibility({
@@ -238,7 +240,12 @@ export function SimpleEditor() {
       setMobileView("main")
     }
   }, [isMobile, mobileView])
-
+  
+  useImperativeHandle(ref, () => ({
+    getJSON: () => editor?.getJSON(),
+    getHTML: () => editor?.getHTML(),
+  }))
+  
   return (
     <div className="simple-editor-wrapper">
       <EditorContext.Provider value={{ editor }}>
@@ -274,4 +281,7 @@ export function SimpleEditor() {
       </EditorContext.Provider>
     </div>
   )
-}
+})
+SimpleEditor.displayName = 'SimpleEditor'
+
+export default SimpleEditor
