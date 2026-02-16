@@ -63,3 +63,18 @@ func (mr *MockRepositoryDB_PostMockRecorder) CreatePost(ctx, tx, post interface{
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePost", reflect.TypeOf((*MockRepositoryDB_Post)(nil).CreatePost), ctx, tx, post)
 }
+
+// ListPosts mocks base method.
+func (m *MockRepositoryDB_Post) ListPosts(ctx context.Context, tx *gorm.DB) ([]post.Post, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListPosts", ctx, tx)
+	ret0, _ := ret[0].([]post.Post)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListPosts indicates an expected call of ListPosts.
+func (mr *MockRepositoryDB_PostMockRecorder) ListPosts(ctx, tx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListPosts", reflect.TypeOf((*MockRepositoryDB_Post)(nil).ListPosts), ctx, tx)
+}

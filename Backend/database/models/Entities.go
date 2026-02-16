@@ -13,16 +13,17 @@ type Categories struct {
 
 type Post struct {
 	gorm.Model
-	Id_user uuid.UUID      `gorm:"id_user"`
-	Title   string         `gorm:"title"`
-	Content datatypes.JSON `gorm:"content"`
+	Id_user    uuid.UUID      `gorm:"id_user"`
+	Title      string         `gorm:"title"`
+	Content    datatypes.JSON `gorm:"content"`
+	Categories []Categories   `gorm:"many2many:relation_categories;"`
 }
 
 type Relation_categories struct {
 	gorm.Model
-	Id_post uint  `gorm:"id_post"`
-	Post    Post `gorm:"foreignKey:Id_post;references:ID"`
+	Post_id uint `gorm:"Post_id"`
+	Post    Post `gorm:"foreignKey:Post_id;references:ID"`
 
-	Id_categorie_tag uint        `gorm:"id_categorie_tag"`
-	Categorie        Categories `gorm:"foreignKey:Id_categorie_tag;references:ID"`
+	Categories_id uint       `gorm:"Categories_id"`
+	Categorie        Categories `gorm:"foreignKey:Categories_id;references:ID"`
 }

@@ -11,6 +11,7 @@ import (
 
 type Service interface {
 	CreatePost(ctx context.Context, categories []uint, Id_user uuid.UUID, title string, content datatypes.JSON) error
+	ListPosts(ctx context.Context) ([]post.Post, error)
 }
 
 type service struct {
@@ -44,4 +45,8 @@ func (s *service) CreatePost(ctx context.Context, categories []uint, Id_user uui
 		}
 		return nil
 	})
+}
+
+func (s *service) ListPosts(ctx context.Context) ([]post.Post, error) {
+	return s.repository.ListPosts(ctx, s.db.WithContext(ctx))
 }
