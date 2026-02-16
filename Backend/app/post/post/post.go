@@ -1,6 +1,8 @@
 package post
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 	"gorm.io/datatypes"
 )
@@ -17,4 +19,5 @@ type Post struct {
 	Content        datatypes.JSON   `json:"content"`
 	Categories     []uint           `json:"categories"`
 	CategoriesData []CategoriesPost `json:"categoriesdata"`
+	CreatedAt      time.Time        `json:"created_at"`
 }

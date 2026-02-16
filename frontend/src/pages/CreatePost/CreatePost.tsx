@@ -59,17 +59,16 @@ const CreatePost = () =>{
         }
     }
 
-
-    const getCategories = async () =>{
-        try{
-            const response = await axiosInstance.get("/devzone-api/v1/categories")
-            setCategories(response.data.categories)
-        }catch(error){
-            console.log(error)
-        }
-    }
-
     useEffect(() =>{
+        const getCategories = async () =>{
+            try{
+                const response = await axiosInstance.get("/devzone-api/v1/categories")
+                setCategories(response.data.categories)
+            }catch(error){
+                console.log(error)
+            }
+        }
+        
         getCategories()
     },[])
     
@@ -79,8 +78,8 @@ const CreatePost = () =>{
     }))
 
     return(
-        <>    {contextHolder}
-
+        <>    
+            {contextHolder}
             <div className='sel-inp flex gap-5 justify-between mb-10'>
                 <Input id='Title-input' className='!w-[50%] !bg-[#1D1D1D] !text-white !placeholder-[#9e9e9e]' placeholder="Title" />
                 <Select className='!w-[40%] !bg-[#1D1D1D] !text-white !placeholder-[#9e9e9e]'

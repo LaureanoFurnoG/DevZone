@@ -48,7 +48,7 @@ func (r *postsRepository) AddCategorieInPost(ctx context.Context, tx *gorm.DB, p
 func (r *postsRepository) ListPosts(ctx context.Context, tx *gorm.DB) ([]post.Post, error) {
 	var postsDAO []models.Post
 
-	if err := tx.WithContext(ctx).
+	if err := tx.WithContext(ctx).Order("created_at desc").
 		Preload("Categories").
 		Find(&postsDAO).Error; err != nil {
 		return nil, err
@@ -66,6 +66,7 @@ func (r *postsRepository) ListPosts(ctx context.Context, tx *gorm.DB) ([]post.Po
 			Id_user:        p.Id_user,
 			Title:          p.Title,
 			Content:        p.Content,
+			CreatedAt:      p.CreatedAt,
 			CategoriesData: postCurrent,
 		})
 	}
