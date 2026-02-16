@@ -85,127 +85,128 @@ const MainLayout: React.FC = () => {
 
     return (
         <Layout className='!h-screen'>
-        <Sider className={`!bg-[#1D1D1D] !border-[#ffffff] !border-2 !border-l-0 !border-b-0 !border-t-0 ${collapsed ? "hidden sm:block !border-0" : "!w-full"}`} trigger={null} collapsible collapsed={collapsed} width={250}>
-            <Menu className='!bg-[#1D1D1D]'
-            theme="dark"
-            mode="inline"
-            selectedKeys={[currentPage]}
-            items={[
-                {
-                key: '0',
-                icon: <img src={logo} className="w-10 rounded-lg" />,
-                label: <span className='text-white'>Zone</span>,
-                disabled: true,
-                },
-                {
-                key: '1',
-                icon: <HomeOutlined />,
-                label: 'Home',
-                onClick: () => navigateHome()
-                },
-                {
-                key: '2',
-                icon: <AppstoreOutlined/>,
-                label: 'Categories',
-                children: [
-                    { key: '8', icon: <BookOutlined/>, label: 'Frameworks', onClick: () => navigateFrameworks() },
-                    { key: '9', icon: <LuLibraryBig />, label: 'Libraries', onClick: () => navigateLibraries()},
-                    { key: '10', icon: <GoPackageDependencies />, label: 'Dependencies', onClick: () => navigateDependencies() },
-                    { key: '11', icon: <FaShieldAlt />, label: 'Authentication', onClick: () => navigateAuthentication()},
-                    { key: '12', icon: <CiServer />, label: 'Backend', onClick: () => navigateBackend()},
-                ],
-                },
-                {
-                key: '3',
-                icon: <BsBook />,
-                label: 'Release Notes',
-                onClick: () => releaseNotes()
-                },
-            ]}
-            />
-            <div>
-                <Button
-                    type="primary"
-                    icon={<PlusOutlined />}
-                    className={`
-                    !bg-[linear-gradient(155deg,rgba(55,22,71,1)_1%,rgba(0,102,197,1)_50%,rgba(55,22,71,1)_100%)]
-                    !border-0
-                    !h-12
-                    ${collapsed ? '!w-[89%] !mx-1' : '!w-[94%] !mx-1'}
-                    `}
-                    onClick={() => createPost()}
-                >
-                    {!collapsed && 'Create Post'}
-                </Button>
-                {isAuthenticated ? (
-                    <div className='flex justify-center items-center p-5 border-t-2 mt-8 border-white w-full gap-3'>
-                        <img className='rounded-full w-10 h-10 !bg-red-500' src={me?.lastname} alt="" />
-                        {!collapsed && 
-                            <div className='!w-[80%]'>
-                            <h2 className='text-white text-xl font-semibold'>{me?.name}</h2>
-                            <p className='text-gray-500 break-all'>User</p>
-                            </div>
-                        }
-                    </div>
-                ) : (
-                    <div className='border-t-2 mt-8 border-white'>
-                        <Button
-                            type="primary"
-                            icon={<LoginOutlined />}
-                            className={`
-                            !bg-[linear-gradient(155deg,rgba(55,22,71,1)_1%,rgba(0,102,197,1)_50%,rgba(55,22,71,1)_100%)]
-                            !border-0
-                            !h-12 m-8
-                            ${collapsed ? '!w-[89%] !mx-1' : '!w-[94%] !mx-1'}
-                            `}
-                            onClick={() => login()}
-                        >
-                            {!collapsed && 'Login'}
-                        </Button>
-                    </div>
-                )}
-            </div>
-        </Sider>
-        <Layout className='!bg-[#303030]'>
-            <Header className={`!flex !w-full !justify-between !bg-[#1D1D1D] !border !border-[#ffffff] !border-2 !border-t-0 !border-r-0 ${collapsed ? "!border-l-0" : ""}`} style={{ padding: 0, background: colorBgContainer }}>
-                <div className='!w-[100%] flex items-center'>
+            <Sider className={`fixed !bg-[#1D1D1D] !border-[#ffffff] !border-2 !border-l-0 !border-b-0 !border-t-0 ${collapsed ? "hidden sm:block !border-0" : "!w-full"}`} trigger={null} collapsible collapsed={collapsed} width={250}>
+                <Menu className='!bg-[#1D1D1D]'
+                theme="dark"
+                mode="inline"
+                selectedKeys={[currentPage]}
+                items={[
+                    {
+                    key: '0',
+                    icon: <img src={logo} className="w-10 rounded-lg" />,
+                    label: <span className='text-white'>Zone</span>,
+                    disabled: true,
+                    },
+                    {
+                    key: '1',
+                    icon: <HomeOutlined />,
+                    label: 'Home',
+                    onClick: () => navigateHome()
+                    },
+                    {
+                    key: '2',
+                    icon: <AppstoreOutlined/>,
+                    label: 'Categories',
+                    children: [
+                        { key: '8', icon: <BookOutlined/>, label: 'Frameworks', onClick: () => navigateFrameworks() },
+                        { key: '9', icon: <LuLibraryBig />, label: 'Libraries', onClick: () => navigateLibraries()},
+                        { key: '10', icon: <GoPackageDependencies />, label: 'Dependencies', onClick: () => navigateDependencies() },
+                        { key: '11', icon: <FaShieldAlt />, label: 'Authentication', onClick: () => navigateAuthentication()},
+                        { key: '12', icon: <CiServer />, label: 'Backend', onClick: () => navigateBackend()},
+                    ],
+                    },
+                    {
+                    key: '3',
+                    icon: <BsBook />,
+                    label: 'Release Notes',
+                    onClick: () => releaseNotes()
+                    },
+                ]}
+                />
+                <div>
                     <Button
-                        className='!text-white'
-                        type="text"
-                        icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-                        onClick={() => setCollapsed(!collapsed)}
-                        style={{
-                        fontSize: '16px',
-                        width: 64,
-                        height: 64,
-                        }}
-                    />
-                    <Search placeholder="input search text" onSearch={onSearch} className={`search-Header  ${collapsed ? "!w-[75%]" : "!hidden sm:!flex"}`} style={{ width: '60%' }} />
+                        type="primary"
+                        icon={<PlusOutlined />}
+                        className={`
+                        !bg-[linear-gradient(155deg,rgba(55,22,71,1)_1%,rgba(0,102,197,1)_50%,rgba(55,22,71,1)_100%)]
+                        !border-0
+                        !h-12
+                        ${collapsed ? '!w-[89%] !mx-1' : '!w-[94%] !mx-1'}
+                        `}
+                        onClick={() => createPost()}
+                    >
+                        {!collapsed && 'Create Post'}
+                    </Button>
+                    {isAuthenticated ? (
+                        <div className='flex justify-center items-center p-5 border-t-2 mt-8 border-white w-full gap-3'>
+                            <img className='rounded-full w-10 h-10 !bg-red-500' src={me?.lastname} alt="" />
+                            {!collapsed && 
+                                <div className='!w-[80%]'>
+                                <h2 className='text-white text-xl font-semibold'>{me?.name}</h2>
+                                <p className='text-gray-500 break-all'>User</p>
+                                </div>
+                            }
+                        </div>
+                    ) : (
+                        <div className='border-t-2 mt-8 border-white'>
+                            <Button
+                                type="primary"
+                                icon={<LoginOutlined />}
+                                className={`
+                                !bg-[linear-gradient(155deg,rgba(55,22,71,1)_1%,rgba(0,102,197,1)_50%,rgba(55,22,71,1)_100%)]
+                                !border-0
+                                !h-12 m-8
+                                ${collapsed ? '!w-[89%] !mx-1' : '!w-[94%] !mx-1'}
+                                `}
+                                onClick={() => login()}
+                            >
+                                {!collapsed && 'Login'}
+                            </Button>
+                        </div>
+                    )}
                 </div>
-                {isAuthenticated &&
-                    <Button
-                        className='!text-white '
-                        type="text"
-                        icon={<LogoutOutlined />}
-                        onClick={() => logout()}
-                        style={{
-                        fontSize: '16px',
-                        width: 64,
-                        height: 64,
-                        }}
-                    />
-                }
-            </Header>
-            <Content    
-            style={{
-                margin: '24px 16px',
-                padding: 24,
-                minHeight: 280,
-            }}
-            >
-            <Outlet />
-            </Content>
-        </Layout>
+            </Sider>
+            <Layout className='!bg-[#303030]'>
+                <Header className={`fixed !flex !w-full !justify-between !bg-[#1D1D1D] !border !border-[#ffffff] !border-2 !border-t-0 !border-r-0 ${collapsed ? "!border-l-0" : ""}`} style={{ padding: 0, background: colorBgContainer }}>
+                    <div className='!w-[100%] flex items-center'>
+                        <Button
+                            className='!text-white'
+                            type="text"
+                            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+                            onClick={() => setCollapsed(!collapsed)}
+                            style={{
+                            fontSize: '16px',
+                            width: 64,
+                            height: 64,
+                            }}
+                        />
+                        <Search placeholder="input search text" onSearch={onSearch} className={`search-Header  ${collapsed ? "!w-[75%]" : "!hidden sm:!flex"}`} style={{ width: '60%' }} />
+                    </div>
+                    {isAuthenticated &&
+                        <Button
+                            className='!text-white '
+                            type="text"
+                            icon={<LogoutOutlined />}
+                            onClick={() => logout()}
+                            style={{
+                            fontSize: '16px',
+                            width: 64,
+                            height: 64,
+                            }}
+                        />
+                    }
+                </Header>
+                <Content    
+                    className={`
+                        mt-16
+                        p-[24px]
+                        h-[calc(100vh-4rem)]
+                        overflow-y-auto
+                    `}
+                >
+                <Outlet />
+                </Content>
+            </Layout>
         </Layout>
     );
 };
