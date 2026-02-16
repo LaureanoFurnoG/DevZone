@@ -34,8 +34,8 @@ func (r *postsRepository) CreatePost(ctx context.Context, tx *gorm.DB, post *pos
 func (r *postsRepository) AddCategorieInPost(ctx context.Context, tx *gorm.DB, post *post.Post) error {
 	for i := range post.Categories {
 		postCategoriesDAO := models.Relation_categories{
-			Id_post:          post.ID,
-			Id_categorie_tag: post.Categories[i],
+			Post_id:       post.ID,
+			Categories_id: post.Categories[i],
 		}
 
 		if err := tx.WithContext(ctx).Create(&postCategoriesDAO).Error; err != nil {
@@ -43,4 +43,32 @@ func (r *postsRepository) AddCategorieInPost(ctx context.Context, tx *gorm.DB, p
 		}
 	}
 	return nil
+}
+
+func (r *postsRepository) ListPosts(ctx context.Context, tx *gorm.DB) ([]post.Post, error) {
+	var postsDAO []models.Post
+
+	if err := tx.WithContext(ctx).
+		Preload("Categories").
+		Find(&postsDAO).Error; err != nil {
+		return nil, err
+	}
+
+	posts := make([]post.Post, 0, len(postsDAO))
+	for _, p := range postsDAO {
+		postCurrent := make([]post.CategoriesPost, 0, len(p.Categories))
+		for _, c := range p.Categories {
+			postCurrent = append(postCurrent, post.CategoriesPost{ID: c.ID, Name: c.Name})
+		}
+
+		posts = append(posts, post.Post{
+			ID:             p.ID,
+			Id_user:        p.Id_user,
+			Title:          p.Title,
+			Content:        p.Content,
+			CategoriesData: postCurrent,
+		})
+	}
+
+	return posts, nil
 }
