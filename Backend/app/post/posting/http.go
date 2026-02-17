@@ -2,6 +2,7 @@ package posting
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -14,6 +15,7 @@ func NewHTTPHandler(g *echo.Group, svc Service) {
 
 	v1.POST("", createPostHandler(svc))
 	v1.GET("", listPostsHandler(svc))
+	v1.GET("/:categoryId", listPostsByCategoryIDHandler(svc))
 }
 
 type createPostRequest struct {
@@ -50,6 +52,34 @@ func listPostsHandler(svc Service) echo.HandlerFunc {
 			return err
 		}
 		return c.JSON(http.StatusOK, listPostsResponse{
+			Posts: posts,
+		})
+	}
+}
+
+type listPostsByCategoryIDResponse struct {
+	Posts []post.Post `json:"posts"`
+}
+
+type listPostsByCategoryIDRequest struct {
+	CategoryID uint `json:"category_id"`
+}
+
+func listPostsByCategoryIDHandler(svc Service) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var req listPostsByCategoryIDRequest
+		CategoryIDuint, err := strconv.ParseUint(c.Param("categoryId"), 10, 64)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, "Issue with parse categoryID")
+		}
+		req.CategoryID = uint(CategoryIDuint)
+
+		posts, err := svc.ListPostsByCategoryID(c.Request().Context(), req.CategoryID)
+		if err != nil {
+			return err
+		}
+
+		return c.JSON(http.StatusOK, listPostsByCategoryIDResponse{
 			Posts: posts,
 		})
 	}
