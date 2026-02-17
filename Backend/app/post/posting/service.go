@@ -12,6 +12,7 @@ import (
 type Service interface {
 	CreatePost(ctx context.Context, categories []uint, Id_user uuid.UUID, title string, content datatypes.JSON) error
 	ListPosts(ctx context.Context) ([]post.Post, error)
+	ListPostsByCategoryID(ctx context.Context, categoryID uint) ([]post.Post, error)
 }
 
 type service struct {
@@ -49,4 +50,8 @@ func (s *service) CreatePost(ctx context.Context, categories []uint, Id_user uui
 
 func (s *service) ListPosts(ctx context.Context) ([]post.Post, error) {
 	return s.repository.ListPosts(ctx, s.db.WithContext(ctx))
+}
+
+func (s *service) ListPostsByCategoryID(ctx context.Context, categoryID uint) ([]post.Post, error) {
+	return s.repository.ListPostsByID(ctx, s.db.WithContext(ctx), categoryID)
 }

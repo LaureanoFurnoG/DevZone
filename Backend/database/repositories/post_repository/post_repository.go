@@ -2,6 +2,7 @@ package postrepository
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/laureano/devzone/app/post/post"
 	"github.com/laureano/devzone/database/models"
@@ -34,8 +35,8 @@ func (r *postsRepository) CreatePost(ctx context.Context, tx *gorm.DB, post *pos
 func (r *postsRepository) AddCategorieInPost(ctx context.Context, tx *gorm.DB, post *post.Post) error {
 	for i := range post.Categories {
 		postCategoriesDAO := models.Relation_categories{
-			Post_id:       post.ID,
-			Categories_id: post.Categories[i],
+			PostID:     post.ID,
+			CategoryID: post.Categories[i],
 		}
 
 		if err := tx.WithContext(ctx).Create(&postCategoriesDAO).Error; err != nil {
@@ -54,6 +55,36 @@ func (r *postsRepository) ListPosts(ctx context.Context, tx *gorm.DB) ([]post.Po
 		return nil, err
 	}
 
+	posts := make([]post.Post, 0, len(postsDAO))
+	for _, p := range postsDAO {
+		postCurrent := make([]post.CategoriesPost, 0, len(p.Categories))
+		for _, c := range p.Categories {
+			postCurrent = append(postCurrent, post.CategoriesPost{ID: c.ID, Name: c.Name})
+		}
+
+		posts = append(posts, post.Post{
+			ID:             p.ID,
+			Id_user:        p.Id_user,
+			Title:          p.Title,
+			Content:        p.Content,
+			CreatedAt:      p.CreatedAt,
+			CategoriesData: postCurrent,
+		})
+	}
+
+	return posts, nil
+}
+
+func (r *postsRepository) ListPostsByID(ctx context.Context, tx *gorm.DB, categoryID uint) ([]post.Post, error) {
+	var postsDAO []models.Post
+	fmt.Println(categoryID)
+	if err := tx.WithContext(ctx).
+		Joins("JOIN relation_categories ON relation_categories.post_id = posts.id").
+		Where("relation_categories.categories_id = ?", categoryID).
+		Preload("Categories").Order("posts.created_at desc").
+		Find(&postsDAO).Error; err != nil {
+		return nil, err
+	}
 	posts := make([]post.Post, 0, len(postsDAO))
 	for _, p := range postsDAO {
 		postCurrent := make([]post.CategoriesPost, 0, len(p.Categories))
