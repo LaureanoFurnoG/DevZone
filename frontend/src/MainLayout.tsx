@@ -84,8 +84,8 @@ const MainLayout: React.FC = () => {
     const onSearch: SearchProps['onSearch'] = (value, _e, info) => console.log(info?.source, value);
 
     return (
-        <Layout className='!h-screen'>
-            <Sider className={`fixed !bg-[#1D1D1D] !border-[#ffffff] !border-2 !border-l-0 !border-b-0 !border-t-0 ${collapsed ? "hidden sm:block !border-0" : "!w-full"}`} trigger={null} collapsible collapsed={collapsed} width={250}>
+        <Layout className="h-screen overflow-hidden">
+            <Sider className={`!bg-[#1D1D1D] !border-[#ffffff] !border-2 !border-l-0 !border-b-0 !border-t-0 ${collapsed ? "hidden sm:block !border-0" : "!w-full"}`} trigger={null} collapsible collapsed={collapsed} width={250}>
                 <Menu className='!bg-[#1D1D1D]'
                 theme="dark"
                 mode="inline"
@@ -143,7 +143,7 @@ const MainLayout: React.FC = () => {
                             {!collapsed && 
                                 <div className='!w-[80%]'>
                                 <h2 className='text-white text-xl font-semibold'>{me?.name}</h2>
-                                <p className='text-gray-500 break-all'>User</p>
+                                <p className='text-gray-500 break-all'>{me?.nickName}</p>
                                 </div>
                             }
                         </div>
@@ -167,8 +167,8 @@ const MainLayout: React.FC = () => {
                 </div>
             </Sider>
             <Layout className='!bg-[#303030]'>
-                <Header className={`fixed !flex !w-full !justify-between !bg-[#1D1D1D] !border !border-[#ffffff] !border-2 !border-t-0 !border-r-0 ${collapsed ? "!border-l-0" : ""}`} style={{ padding: 0, background: colorBgContainer }}>
-                    <div className='!w-[100%] flex items-center'>
+                <Header className={`top-0 !flex !w-[100%] !justify-between !pr-[5%] !bg-[#1D1D1D] !border !border-[#ffffff] !border-2 !border-t-0 !border-r-0 ${collapsed ? "!border-l-0" : ""}`} style={{ padding: 0, background: colorBgContainer }}>
+                    <div className='!w-[80%] flex items-center'>
                         <Button
                             className='!text-white'
                             type="text"
@@ -180,25 +180,22 @@ const MainLayout: React.FC = () => {
                             height: 64,
                             }}
                         />
-                        <Search placeholder="input search text" onSearch={onSearch} className={`search-Header  ${collapsed ? "!w-[75%]" : "!hidden sm:!flex"}`} style={{ width: '60%' }} />
+                        <Search placeholder="input search text" onSearch={onSearch} className={`search-Header  ${collapsed ? "!w-[75%]" : "!hidden sm:!flex"}`} />
                     </div>
-                    {isAuthenticated &&
-                        <Button
-                            className='!text-white '
-                            type="text"
-                            icon={<LogoutOutlined />}
-                            onClick={() => logout()}
-                            style={{
-                            fontSize: '16px',
-                            width: 64,
-                            height: 64,
-                            }}
-                        />
-                    }
+                        {isAuthenticated &&
+                            <Button
+                                type="text"
+                                icon={<LogoutOutlined />}
+                                onClick={logout}
+                                style={{
+                                    fontSize: '16px',
+                                    height: 64,
+                                }}
+                            />
+                        }
                 </Header>
                 <Content    
                     className={`
-                        mt-16
                         p-[24px]
                         h-[calc(100vh-4rem)]
                         overflow-y-auto
