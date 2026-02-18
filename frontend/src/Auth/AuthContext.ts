@@ -4,6 +4,7 @@ export type Me = {
   name: string;
   lastname: string;
   email?: string;
+  nickName?: string;
   sub: string | undefined;
   token: string | undefined;
 };

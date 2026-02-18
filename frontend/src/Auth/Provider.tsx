@@ -24,9 +24,13 @@ export const AuthProvider = ({children}: {children: React.ReactNode}) => {
                 const name = keycloak.tokenParsed.name 
                 const lastname = keycloak.tokenParsed.lastname
                 const email = keycloak.tokenParsed.email
+                const nickName = keycloak.tokenParsed.preferred_username
                 const token = keycloak.token
                 const sub = keycloak.subject
-                setMe({name, email, lastname, token, sub})
+                setMe({name, email, lastname, token, sub, nickName})
+                if (token != null){
+                    sessionStorage.setItem('auth', token)
+                }
             }
             setLoading(false)
         }).catch(() =>{
@@ -39,6 +43,9 @@ export const AuthProvider = ({children}: {children: React.ReactNode}) => {
                 .then((refreshed) =>{
                     if(refreshed){
                         setToken(keycloak.token)
+                        if (keycloak.token != null){
+                            sessionStorage.setItem('auth', keycloak.token)
+                        }
                     }
                 }).catch(() =>{
                     keycloak.login()

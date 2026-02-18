@@ -2,6 +2,17 @@ import { useEffect, useState } from "react"
 import PostCard from "../../components/PostCard/Card"
 import axiosInstance from "../../api/axios"
 
+type TiptapNode = {
+  type: string
+  content?: TiptapNode[]
+  text?: string
+}
+
+type TiptapDocument = {
+  type: "doc"
+  content: TiptapNode[]
+}
+
 type Category = {
   id: number
   name: string
@@ -10,7 +21,7 @@ type Category = {
 type Post = {
   id: number
   title: string
-  content: any
+  content: TiptapDocument
   created_at: string
   categoriesdata: Category[]
 }
@@ -37,7 +48,7 @@ const Home = () =>{
                 {posts.slice(0, 30).map((post) => {
                     const preview =
                     post.content?.content?.[0]?.content
-                        ?.map((c: any) => c.text)
+                        ?.map((c: TiptapNode) => c.text)
                         .join("") ?? ""
 
                     return (

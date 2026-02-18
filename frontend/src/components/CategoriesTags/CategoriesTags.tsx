@@ -6,8 +6,16 @@ const CategoriesTags = ({Title}: Props) =>{
         switch (Title) {
         case "Auth":
             return "#5073FF"
-        case "React":
+        case "Framework":
             return "#50CAFF"
+        case "Libraries":
+            return "#f0354e"
+        case "Dependencies":
+            return "#7800c9"
+        case "Backend":
+            return "#009e42"
+        case "ReleaseNotes":
+            return "#dbba00"
         default:
             return "#999999"
         }
