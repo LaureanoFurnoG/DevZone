@@ -14,6 +14,11 @@ type Config struct {
 	DBUser     string
 	DBPassword string
 	DBName     string
+
+	KeycloakRealmURL string
+	ClientID         string
+	KeycloakUser     string
+	KeycloakPassword string
 }
 
 func mustGetEnv(key string) string {
@@ -34,14 +39,19 @@ func Load() *Config {
 	if err != nil {
 		log.Fatal(err)
 	}
-	
+
 	return &Config{
 		ServerPort: serverPort,
 
-		DBHost:     "localhost",
-		DBPort:     dbPort,
-		DBUser:     "postgres",
-		DBPassword: "secret",
-		DBName:     "devzone",
+		DBHost:           "localhost",
+		DBPort:           dbPort,
+		DBUser:           "postgres",
+		DBPassword:       "secret",
+		DBName:           "devzone",
+		
+		KeycloakRealmURL: "http://localhost:8081/realms/devzone",
+		ClientID:         "backend-api",
+		KeycloakUser:     "admin",
+		KeycloakPassword: "secret",
 	}
 }

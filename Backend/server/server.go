@@ -33,7 +33,6 @@ func NewServer(cfg *config.Config) (*echo.Echo, error) {
 		AllowHeaders: []string{"Content-Type", "Authorization"},
 		MaxAge:       300,
 	}))
-	
 	r := e.Group("/devzone-api")
 
 	postRepositoryDB := postrepository.NewPostRepository(db)
@@ -42,7 +41,7 @@ func NewServer(cfg *config.Config) (*echo.Echo, error) {
 	categoryRepositoryDB := categoryrepository.NewCategoryRepository(db)
 	categoryService := categorizing.NewService(db, categoryRepositoryDB)
 
-	posting.NewHTTPHandler(r, postService)
+	posting.NewHTTPHandler(r, postService, cfg)
 	categorizing.NewHTTPHandler(r, categoryService)
 	log.Printf("Server listening on port %v", cfg.ServerPort)
 	return e, nil

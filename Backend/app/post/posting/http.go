@@ -7,15 +7,23 @@ import (
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/laureano/devzone/app/post/post"
+	"github.com/laureano/devzone/config"
+	"github.com/laureano/devzone/middlewares"
 	"gorm.io/datatypes"
 )
 
-func NewHTTPHandler(g *echo.Group, svc Service) {
+func NewHTTPHandler(g *echo.Group, svc Service, cfg *config.Config) error {
 	v1 := g.Group("/v1/posts")
+	kcVerifier, err := middlewares.NewKeycloakVerifier(cfg)
+	if err != nil {
+		return err
+	}
 
-	v1.POST("", createPostHandler(svc))
+	v1.POST("", createPostHandler(svc), kcVerifier.Middleware)
 	v1.GET("", listPostsHandler(svc))
 	v1.GET("/:categoryId", listPostsByCategoryIDHandler(svc))
+
+	return nil
 }
 
 type createPostRequest struct {
@@ -32,6 +40,13 @@ func createPostHandler(svc Service) echo.HandlerFunc {
 		if err := c.Bind(&req); err != nil {
 			return c.JSON(http.StatusBadRequest, "invalid request body")
 		}
+		
+		roles := c.Get("roles").([]string)
+		for i := 0; i < len(req.Categories); i++ {
+			if req.Categories[i] == 4 && !contains(roles, "Admin"){
+				return c.JSON(http.StatusForbidden, "You need admin role to use this category")
+			}
+		}
 
 		err := svc.CreatePost(c.Request().Context(), req.Categories, req.Id_user, req.Title, req.Content)
 		if err != nil {
@@ -39,6 +54,15 @@ func createPostHandler(svc Service) echo.HandlerFunc {
 		}
 		return c.JSON(http.StatusCreated, nil)
 	}
+}
+
+func contains(arr []string, val string) bool {
+    for _, v := range arr {
+        if v == val {
+            return true
+        }
+    }
+    return false
 }
 
 type listPostsResponse struct {
