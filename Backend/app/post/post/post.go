@@ -15,6 +15,8 @@ type CategoriesPost struct {
 type Post struct {
 	ID             uint             `json:"id"`
 	Id_user        uuid.UUID        `json:"id_user"`
+	ProfileImage   *string           `json:"profile_image"`
+	Username       string           `json:"username"`
 	Title          string           `json:"title"`
 	Content        datatypes.JSON   `json:"content"`
 	Categories     []uint           `json:"categories"`

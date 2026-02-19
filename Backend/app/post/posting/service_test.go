@@ -5,13 +5,14 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
 	"github.com/laureano/devzone/app/post/post"
 	"github.com/laureano/devzone/config"
 	"github.com/laureano/devzone/database/connect"
+	mockKeycloak "github.com/laureano/devzone/mocks/keycloak"
 	mockPost "github.com/laureano/devzone/mocks/repositories/db/post"
+	"github.com/stretchr/testify/require"
 	"gorm.io/datatypes"
 )
 
@@ -25,7 +26,8 @@ func TestCreatePosting(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 
 	mockPost := mockPost.NewMockRepositoryDB_Post(mockCtrl)
-	svc := NewService(db, mockPost)
+	mockKeycloak := mockKeycloak.NewMockRepositoryIdentities(mockCtrl)
+	svc := NewService(db, mockKeycloak, mockPost)
 
 	type ContentJson struct {
 		Example string `json:"example"`
@@ -56,7 +58,7 @@ func TestCreatePosting(t *testing.T) {
 					CreatePost(gomock.Any(), gomock.Any(), gomock.Any()).
 					Times(1).
 					Return(nil)
-				
+
 				mockPost.EXPECT().
 					AddCategorieInPost(gomock.Any(), gomock.Any(), gomock.Any()).
 					Times(1).

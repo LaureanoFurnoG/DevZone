@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/laureano/devzone/app/post/post"
+	"github.com/laureano/devzone/identity"
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
 )
@@ -16,14 +17,16 @@ type Service interface {
 }
 
 type service struct {
-	repository post.RepositoryDB_Post
-	db         *gorm.DB
+	repository           post.RepositoryDB_Post
+	IdentitiesRepository identity.RepositoryIdentities
+	db                   *gorm.DB
 }
 
-func NewService(db *gorm.DB, repo post.RepositoryDB_Post) Service {
+func NewService(db *gorm.DB, identitiesRepo identity.RepositoryIdentities, repo post.RepositoryDB_Post) Service {
 	return &service{
-		repository: repo,
-		db:         db,
+		repository:           repo,
+		IdentitiesRepository: identitiesRepo,
+		db:                   db,
 	}
 }
 
@@ -49,7 +52,22 @@ func (s *service) CreatePost(ctx context.Context, categories []uint, Id_user uui
 }
 
 func (s *service) ListPosts(ctx context.Context) ([]post.Post, error) {
-	return s.repository.ListPosts(ctx, s.db.WithContext(ctx))
+	posts, err := s.repository.ListPosts(ctx, s.db.WithContext(ctx))
+	if err != nil {
+		return nil, err
+	}
+	//this is a shit, i need change this in the future, for the moment is ok.
+	for i := 0; i < len(posts); i++ {
+		user, err := s.IdentitiesRepository.GetUserByID(ctx, posts[i].Id_user.String())
+		if err != nil {
+			return nil, err
+		}
+
+		posts[i].ProfileImage = user.ProfileImage
+		posts[i].Username = user.Username
+	}
+
+	return posts, nil
 }
 
 func (s *service) ListPostsByCategoryID(ctx context.Context, categoryID uint) ([]post.Post, error) {

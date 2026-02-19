@@ -14,6 +14,7 @@ import (
 	"github.com/laureano/devzone/app/post/posting"
 	"github.com/laureano/devzone/config"
 	"github.com/laureano/devzone/database/connect"
+	mockKeycloak "github.com/laureano/devzone/mocks/keycloak"
 	mockCategory "github.com/laureano/devzone/mocks/repositories/db/category"
 	mockPost "github.com/laureano/devzone/mocks/repositories/db/post"
 	"gorm.io/datatypes"
@@ -32,7 +33,8 @@ func TestListCategories(t *testing.T) {
 	svc := NewService(db, mockCategory)
 
 	mockPost := mockPost.NewMockRepositoryDB_Post(mockCtrl)
-	svcPost := posting.NewService(db, mockPost)
+	mockKeycloak := mockKeycloak.NewMockRepositoryIdentities(mockCtrl)
+	svcPost := posting.NewService(db, mockKeycloak, mockPost)
 
 	type ContentJson struct {
 		Example string `json:"example"`

@@ -11,6 +11,7 @@ import (
 	"github.com/laureano/devzone/database/connect"
 	categoryrepository "github.com/laureano/devzone/database/repositories/category_repository"
 	postrepository "github.com/laureano/devzone/database/repositories/post_repository"
+	"github.com/laureano/devzone/identity/keycloak"
 )
 
 func NewServer(cfg *config.Config) (*echo.Echo, error) {
@@ -36,12 +37,15 @@ func NewServer(cfg *config.Config) (*echo.Echo, error) {
 	r := e.Group("/devzone-api")
 
 	postRepositoryDB := postrepository.NewPostRepository(db)
-	postService := posting.NewService(db, postRepositoryDB)
+	identitiesRepository := keycloak.NewKeycloakRepository(cfg)
+	postService := posting.NewService(db, identitiesRepository, postRepositoryDB)
 
 	categoryRepositoryDB := categoryrepository.NewCategoryRepository(db)
 	categoryService := categorizing.NewService(db, categoryRepositoryDB)
 
-	posting.NewHTTPHandler(r, postService, cfg)
+	if err := posting.NewHTTPHandler(r, postService, cfg); err != nil {
+		return nil, err
+	}
 	categorizing.NewHTTPHandler(r, categoryService)
 	log.Printf("Server listening on port %v", cfg.ServerPort)
 	return e, nil
