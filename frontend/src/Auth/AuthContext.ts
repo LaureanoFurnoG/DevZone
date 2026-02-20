@@ -5,6 +5,7 @@ export type Me = {
   lastname: string;
   email?: string;
   nickName?: string;
+  profileImage?: string;
   sub: string | undefined;
   token: string | undefined;
 };

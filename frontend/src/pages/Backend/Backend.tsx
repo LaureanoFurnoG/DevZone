@@ -22,6 +22,8 @@ type Post = {
   id: number
   title: string
   content: TiptapDocument
+  username: string
+  profile_image: string
   created_at: string
   categoriesdata: Category[]
 }
@@ -57,10 +59,10 @@ const Backend = () =>{
                         Id={post.id}
                         Title={post.title}
                         Text={preview}
-                        UserName={"UserName"}
+                        UserName={post.username}
                         DateP={post.created_at}
                         Categories={post.categoriesdata}
-                        ImageProfile=""
+                        ImageProfile={post.profile_image}
                     />
                     )
                 })}
