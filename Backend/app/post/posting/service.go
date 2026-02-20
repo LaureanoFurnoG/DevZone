@@ -179,12 +179,64 @@ func (s *service) ListPostsByCategoryID(ctx context.Context, categoryID uint) ([
 	return posts, nil
 }
 
-func (s *service) PostInformationByID(ctx context.Context, postID uint) (*post.Post, error){
+func (s *service) PostInformationByID(ctx context.Context, postID uint) (*post.Post, error) {
 	post, err := s.repository.PostInformation(ctx, s.db.WithContext(ctx), postID)
-	
-	if err != nil{
+
+	if err != nil {
 		return nil, err
 	}
 
+	seen := make(map[string]struct{})
+	var uniqueIDs []string
+
+	id := post.Id_user.String()
+	if _, ok := seen[id]; !ok {
+		seen[id] = struct{}{}
+		uniqueIDs = append(uniqueIDs, id)
+	}
+
+	const workers = 20
+
+	type result struct {
+		id   string
+		user *identity.User
+		err  error
+	}
+
+	jobs := make(chan string, len(uniqueIDs))
+	results := make(chan result, len(uniqueIDs))
+
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
+	for w := 0; w < workers; w++ {
+		go func() {
+			for id := range jobs {
+				user, err := s.IdentitiesRepository.GetUserByID(ctx, id)
+				results <- result{id: id, user: user, err: err}
+			}
+		}()
+	}
+
+	for _, id := range uniqueIDs {
+		jobs <- id
+	}
+	close(jobs)
+
+	userMap := make(map[string]*identity.User, len(uniqueIDs))
+	for range uniqueIDs {
+		r := <-results
+		if r.err != nil {
+			cancel()
+			return nil, r.err
+		}
+		userMap[r.id] = r.user
+	}
+
+	if user, ok := userMap[post.Id_user.String()]; ok {
+		post.ProfileImage = user.ProfileImage
+		post.Username = user.Username
+	}
+	
 	return post, nil
 }
