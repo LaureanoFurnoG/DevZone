@@ -2,7 +2,7 @@ package postrepository
 
 import (
 	"context"
-	"fmt"
+	"errors"
 
 	"github.com/laureano/devzone/app/post/post"
 	"github.com/laureano/devzone/database/models"
@@ -48,11 +48,16 @@ func (r *postsRepository) AddCategorieInPost(ctx context.Context, tx *gorm.DB, p
 
 func (r *postsRepository) ListPosts(ctx context.Context, tx *gorm.DB) ([]post.Post, error) {
 	var postsDAO []models.Post
-
-	if err := tx.WithContext(ctx).Order("created_at desc").
+	result := tx.WithContext(ctx).Order("created_at desc").
 		Preload("Categories").
-		Find(&postsDAO).Error; err != nil {
-		return nil, err
+		Find(&postsDAO)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		return nil, errors.New("Post not exist")
 	}
 
 	posts := make([]post.Post, 0, len(postsDAO))
@@ -77,14 +82,20 @@ func (r *postsRepository) ListPosts(ctx context.Context, tx *gorm.DB) ([]post.Po
 
 func (r *postsRepository) ListPostsByID(ctx context.Context, tx *gorm.DB, categoryID uint) ([]post.Post, error) {
 	var postsDAO []models.Post
-	fmt.Println(categoryID)
-	if err := tx.WithContext(ctx).
+	result := tx.WithContext(ctx).
 		Joins("JOIN relation_categories ON relation_categories.post_id = posts.id").
 		Where("relation_categories.categories_id = ?", categoryID).
 		Preload("Categories").Order("posts.created_at desc").
-		Find(&postsDAO).Error; err != nil {
-		return nil, err
+		Find(&postsDAO)
+
+	if result.Error != nil {
+		return nil, result.Error
 	}
+
+	if result.RowsAffected == 0 {
+		return nil, errors.New("Post not exist")
+	}
+
 	posts := make([]post.Post, 0, len(postsDAO))
 	for _, p := range postsDAO {
 		postCurrent := make([]post.CategoriesPost, 0, len(p.Categories))
@@ -103,4 +114,31 @@ func (r *postsRepository) ListPostsByID(ctx context.Context, tx *gorm.DB, catego
 	}
 
 	return posts, nil
+}
+
+func (r *postsRepository) PostInformation(ctx context.Context, tx *gorm.DB, postId uint) (*post.Post, error) {
+	var postDAO models.Post
+	result := tx.WithContext(ctx).Where("id = ?", postId).Find(&postDAO)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		return nil, errors.New("Post not exist")
+	}
+
+	postCurrent := make([]post.CategoriesPost, 0, len(postDAO.Categories))
+	for _, c := range postDAO.Categories {
+		postCurrent = append(postCurrent, post.CategoriesPost{ID: c.ID, Name: c.Name})
+	}
+
+	post := post.Post{
+		ID:             postDAO.ID,
+		Id_user:        postDAO.Id_user,
+		Content:        postDAO.Content,
+		CategoriesData: postCurrent,
+	}
+
+	return &post, nil
 }

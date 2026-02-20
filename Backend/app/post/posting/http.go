@@ -22,6 +22,7 @@ func NewHTTPHandler(g *echo.Group, svc Service, cfg *config.Config) error {
 	v1.POST("", createPostHandler(svc), kcVerifier.Middleware)
 	v1.GET("", listPostsHandler(svc))
 	v1.GET("/:categoryId", listPostsByCategoryIDHandler(svc))
+	v1.GET("/publishedpost/:postId", postInformationHandler(svc))
 
 	return nil
 }
@@ -40,10 +41,10 @@ func createPostHandler(svc Service) echo.HandlerFunc {
 		if err := c.Bind(&req); err != nil {
 			return c.JSON(http.StatusBadRequest, "invalid request body")
 		}
-		
+
 		roles := c.Get("roles").([]string)
 		for i := 0; i < len(req.Categories); i++ {
-			if req.Categories[i] == 4 && !contains(roles, "Admin"){
+			if req.Categories[i] == 4 && !contains(roles, "Admin") {
 				return c.JSON(http.StatusForbidden, "You need admin role to use this category")
 			}
 		}
@@ -57,12 +58,12 @@ func createPostHandler(svc Service) echo.HandlerFunc {
 }
 
 func contains(arr []string, val string) bool {
-    for _, v := range arr {
-        if v == val {
-            return true
-        }
-    }
-    return false
+	for _, v := range arr {
+		if v == val {
+			return true
+		}
+	}
+	return false
 }
 
 type listPostsResponse struct {
@@ -100,11 +101,46 @@ func listPostsByCategoryIDHandler(svc Service) echo.HandlerFunc {
 
 		posts, err := svc.ListPostsByCategoryID(c.Request().Context(), req.CategoryID)
 		if err != nil {
-			return err
+			if err.Error() == "Post not exist" {
+				return c.JSON(http.StatusNotFound, map[string]string{"message": err.Error()})
+			}
+			return c.JSON(http.StatusInternalServerError, err)
 		}
 
 		return c.JSON(http.StatusOK, listPostsByCategoryIDResponse{
 			Posts: posts,
+		})
+	}
+}
+
+type postInformationRequest struct {
+	PostID uint
+}
+
+type postInformationResponse struct {
+	Post *post.Post `json:"post"`
+}
+
+func postInformationHandler(svc Service) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var req postInformationRequest
+		postID, err := strconv.ParseUint(c.Param("postId"), 10, 64)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, "Issue with parse postID")
+		}
+		req.PostID = uint(postID)
+
+		post, err := svc.PostInformationByID(c.Request().Context(), req.PostID)
+
+		if err != nil {
+			if err.Error() == "Post not exist" {
+				return c.JSON(http.StatusNotFound, map[string]string{"message": err.Error()})
+			}
+			return c.JSON(http.StatusInternalServerError, err)
+		}
+
+		return c.JSON(http.StatusOK, postInformationResponse{
+			Post: post,
 		})
 	}
 }

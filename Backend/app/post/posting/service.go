@@ -14,6 +14,7 @@ type Service interface {
 	CreatePost(ctx context.Context, categories []uint, Id_user uuid.UUID, title string, content datatypes.JSON) error
 	ListPosts(ctx context.Context) ([]post.Post, error)
 	ListPostsByCategoryID(ctx context.Context, categoryID uint) ([]post.Post, error)
+	PostInformationByID(ctx context.Context, postID uint) (*post.Post, error)
 }
 
 type service struct {
@@ -176,4 +177,14 @@ func (s *service) ListPostsByCategoryID(ctx context.Context, categoryID uint) ([
 	}
 
 	return posts, nil
+}
+
+func (s *service) PostInformationByID(ctx context.Context, postID uint) (*post.Post, error){
+	post, err := s.repository.PostInformation(ctx, s.db.WithContext(ctx), postID)
+	
+	if err != nil{
+		return nil, err
+	}
+
+	return post, nil
 }
