@@ -118,7 +118,7 @@ func (r *postsRepository) ListPostsByID(ctx context.Context, tx *gorm.DB, catego
 
 func (r *postsRepository) PostInformation(ctx context.Context, tx *gorm.DB, postId uint) (*post.Post, error) {
 	var postDAO models.Post
-	result := tx.WithContext(ctx).Where("id = ?", postId).Find(&postDAO)
+	result := tx.WithContext(ctx).Preload("Categories").Where("id = ?", postId).Find(&postDAO)
 
 	if result.Error != nil {
 		return nil, result.Error
@@ -136,7 +136,9 @@ func (r *postsRepository) PostInformation(ctx context.Context, tx *gorm.DB, post
 	post := post.Post{
 		ID:             postDAO.ID,
 		Id_user:        postDAO.Id_user,
+		Title:          postDAO.Title,
 		Content:        postDAO.Content,
+		CreatedAt:      postDAO.CreatedAt,
 		CategoriesData: postCurrent,
 	}
 
