@@ -9,12 +9,14 @@ import (
 type Config struct {
 	ServerPort int
 
-	DBHost     string
-	DBPort     int
-	DBUser     string
-	DBPassword string
-	DBName     string
+	DBHost           string
+	DBPort           int
+	DBUser           string
+	DBPassword       string
+	DBName           string
 
+	KeycloakRealm    string
+	KcRealmSecret    string
 	KeycloakRealmURL string
 	ClientID         string
 	KeycloakUser     string
@@ -48,10 +50,12 @@ func Load() *Config {
 		DBUser:           "postgres",
 		DBPassword:       "secret",
 		DBName:           "devzone",
-		
-		KeycloakRealmURL: "http://localhost:8081/realms/devzone",
+
+		KeycloakRealm:    "devzone",
+		KeycloakRealmURL: "http://localhost:8081",
 		ClientID:         "backend-api",
 		KeycloakUser:     "admin",
 		KeycloakPassword: "secret",
+		KcRealmSecret:    "secret",
 	}
 }

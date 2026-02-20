@@ -24,7 +24,7 @@ const PostCard = ({Id, Title, Text, Categories, ImageProfile, UserName, DateP}: 
         <>
             <div className="bg-[#1D1D1D] p-10 cursor-pointer rounded-[7px]" id={Id.toString()}>
                 <div className="flex justify-between">
-                    <div className="flex gap-5">
+                    <div className="flex gap-5"> 
                         <img className="border-white border-1 w-[50px] h-[50px] rounded-[100%]" src={ImageProfile} alt="profileImage" />
                         <div>
                             <h2 className="text-xl font-bold">{UserName}</h2>

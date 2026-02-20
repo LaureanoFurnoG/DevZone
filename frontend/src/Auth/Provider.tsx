@@ -27,7 +27,8 @@ export const AuthProvider = ({children}: {children: React.ReactNode}) => {
                 const nickName = keycloak.tokenParsed.preferred_username
                 const token = keycloak.token
                 const sub = keycloak.subject
-                setMe({name, email, lastname, token, sub, nickName})
+                const profileImage = keycloak.tokenParsed.profileImage
+                setMe({name, email, lastname, token, sub, nickName, profileImage})
                 if (token != null){
                     sessionStorage.setItem('auth', token)
                 }

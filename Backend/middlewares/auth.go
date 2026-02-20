@@ -2,6 +2,7 @@ package middlewares
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -22,7 +23,7 @@ type KeycloakRoles struct {
 
 func NewKeycloakVerifier(cfg *config.Config) (*KeycloakVerifier, error) {
 	ctx := context.Background()
-	provider, err := oidc.NewProvider(ctx, cfg.KeycloakRealmURL)
+	provider, err := oidc.NewProvider(ctx, fmt.Sprintf("%s/realms/%s", cfg.KeycloakRealmURL, cfg.KeycloakRealm))
 	if err != nil {
 		return nil, err
 	}

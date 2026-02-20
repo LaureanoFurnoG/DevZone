@@ -22,6 +22,8 @@ type Post = {
   id: number
   title: string
   content: TiptapDocument
+  username: string
+  profile_image: string
   created_at: string
   categoriesdata: Category[]
 }
@@ -34,6 +36,7 @@ const Home = () =>{
             try{
                 const response = await axiosInstance.get('/devzone-api/v1/posts')
                 setPosts(response.data.posts)
+                console.log(response.data.posts)
             }catch(error){
                 console.log(error)
             }
@@ -53,13 +56,14 @@ const Home = () =>{
 
                     return (
                     <PostCard
+                        key={post.id}
                         Id={post.id}
                         Title={post.title}
                         Text={preview}
-                        UserName={"UserName"}
+                        UserName={post.username}
                         DateP={post.created_at}
                         Categories={post.categoriesdata}
-                        ImageProfile=""
+                        ImageProfile={post.profile_image}
                     />
                     )
                 })}
