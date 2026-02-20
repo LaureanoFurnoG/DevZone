@@ -93,3 +93,18 @@ func (mr *MockRepositoryDB_PostMockRecorder) ListPostsByID(ctx, tx, categoryID i
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListPostsByID", reflect.TypeOf((*MockRepositoryDB_Post)(nil).ListPostsByID), ctx, tx, categoryID)
 }
+
+// PostInformation mocks base method.
+func (m *MockRepositoryDB_Post) PostInformation(ctx context.Context, tx *gorm.DB, postId uint) (*post.Post, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "PostInformation", ctx, tx, postId)
+	ret0, _ := ret[0].(*post.Post)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// PostInformation indicates an expected call of PostInformation.
+func (mr *MockRepositoryDB_PostMockRecorder) PostInformation(ctx, tx, postId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PostInformation", reflect.TypeOf((*MockRepositoryDB_Post)(nil).PostInformation), ctx, tx, postId)
+}
