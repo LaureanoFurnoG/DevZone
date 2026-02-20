@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import PostCard from "../../components/PostCard/Card"
 import axiosInstance from "../../api/axios"
+import { useNavigate } from "react-router-dom"
 
 type TiptapNode = {
   type: string
@@ -30,6 +31,7 @@ type Post = {
 
 const Home = () =>{
     const [posts, setPosts] = useState<Post[]>([])
+    const navigate = useNavigate()
 
     useEffect(() =>{
         const getPosts = async () =>{
@@ -44,6 +46,10 @@ const Home = () =>{
 
         getPosts()
     },[])
+
+    const navigatePost = (postId: number) =>{
+        navigate(`/post/${postId}`)
+    }
     return(
         <>
             <h1 className="text-2xl font-bold">Last Posts</h1>
@@ -55,16 +61,18 @@ const Home = () =>{
                         .join("") ?? ""
 
                     return (
-                    <PostCard
-                        key={post.id}
-                        Id={post.id}
-                        Title={post.title}
-                        Text={preview}
-                        UserName={post.username}
-                        DateP={post.created_at}
-                        Categories={post.categoriesdata}
-                        ImageProfile={post.profile_image}
-                    />
+                        <div onClick={() => navigatePost(post.id)}>
+                            <PostCard
+                                key={post.id}
+                                Id={post.id}
+                                Title={post.title}
+                                Text={preview}
+                                UserName={post.username}
+                                DateP={post.created_at}
+                                Categories={post.categoriesdata}
+                                ImageProfile={post.profile_image}
+                            />
+                        </div>
                     )
                 })}
             </div>

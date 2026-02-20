@@ -12,6 +12,7 @@ import { useAuth } from './Auth/useAuth'
 import { Navigate } from 'react-router-dom'
 import { ConfigProvider, theme } from "antd"
 import Home from './pages/Home/Home';
+import PostView from './pages/Post/Post';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     const { isAuthenticated, isLoading } = useAuth()
@@ -40,6 +41,7 @@ function App() {
                     <Route path="dependencies" element={<Dependencies />} />
                     <Route path="frameworks" element={<Frameworks />} />
                     <Route path="backend" element={<Backend />} />
+                    <Route path="post/:postId" element={<PostView />} />
                     <Route path="authentication" element={<Authentication />} />
                 </Route>
             </Routes>

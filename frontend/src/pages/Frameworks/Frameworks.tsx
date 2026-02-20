@@ -56,6 +56,7 @@ const Frameworks = () =>{
 
                     return (
                     <PostCard
+                        key={post.id}
                         Id={post.id}
                         Title={post.title}
                         Text={preview}
