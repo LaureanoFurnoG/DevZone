@@ -61,7 +61,7 @@ body,
 }
 
 .simple-editor-content {
-  max-width: 648px;
+  background-color: #1D1D1D;
   width: 100%;
   margin: 0 auto;
   height: 100%;
@@ -69,10 +69,21 @@ body,
   flex-direction: column;
   flex: 1;
 }
-
+.tiptap.ProseMirror code{
+  background-color: rgba(238, 238, 246, 0.11);
+  color: rgba(253, 253, 253, 0.88);
+  border: 1px solid rgba(238, 238, 246, 0.11);
+}
+.tiptap.ProseMirror pre {
+  background-color: rgba(238, 238, 246, 0.11);
+  color: rgba(253, 253, 253, 0.88);
+  border: 1px solid rgba(238, 238, 246, 0.11);
+  overflow-x: auto;     
+  max-width: 100%;
+}
 .simple-editor-content .tiptap.ProseMirror.simple-editor {
   flex: 1;
-  padding: 3rem 3rem 30vh;
+  padding: 3rem 3rem 3rem;
 }
 
 @media screen and (max-width: 480px) {

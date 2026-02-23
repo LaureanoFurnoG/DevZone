@@ -195,11 +195,7 @@ const MainLayout: React.FC = () => {
                         }
                 </Header>
                 <Content    
-                    className={`
-                        p-[24px]
-                        h-[calc(100vh-4rem)]
-                        overflow-y-auto
-                    `}
+                    className={`p-[12px] sm:p-[24px] sm:pl-[10%] sm:pr-[10%] h-[calc(100vh-4rem)] overflow-y-auto ${collapsed ? "":"sm:block hidden"}`}
                 >
                 <Outlet />
                 </Content>

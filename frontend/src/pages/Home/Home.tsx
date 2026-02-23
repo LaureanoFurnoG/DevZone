@@ -47,21 +47,19 @@ const Home = () =>{
         getPosts()
     },[])
 
-    const navigatePost = (postId: number) =>{
-        navigate(`/post/${postId}`)
-    }
+
     return(
         <>
             <h1 className="text-2xl font-bold">Last Posts</h1>
-            <div className="grid gap-5 mt-5">
-                {posts.slice(0, 30).map((post) => {
+            <div className="flex flex-col gap-5 mt-5">
+                {posts.map((post) => {
                     const preview =
                     post.content?.content?.[0]?.content
                         ?.map((c: TiptapNode) => c.text)
                         .join("") ?? ""
 
                     return (
-                        <div onClick={() => navigatePost(post.id)}>
+                        <div onClick={() => navigate(`/post/${post.id}`)}>
                             <PostCard
                                 key={post.id}
                                 Id={post.id}

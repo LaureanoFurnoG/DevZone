@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import PostCard from "../../components/PostCard/Card"
 import axiosInstance from "../../api/axios"
 import { useParams } from "react-router";
+import { TiptapRenderer } from "../../components/PostRender/Render";
 
 type TiptapNode = {
   type: string
@@ -30,15 +31,23 @@ type Post = {
 }
 
 const PostView = () =>{
-    const [post, setPosts] = useState<Post>()
+    const [post, setPost] = useState<Post>({
+        id: 0,
+        title: '',
+        content: { type: 'doc', content: [] },
+        username: '',
+        profile_image: '',
+        created_at: '',
+        categoriesdata: [],
+    })
     const params = useParams();
 
     useEffect(() =>{
         const getPost = async () =>{
             try{
-                const response = await axiosInstance.get(`/devzone-api/v1/posts/${params.postId}`)
-                setPosts(response.data.posts)
-                console.log(response.data.posts)
+                const response = await axiosInstance.get(`/devzone-api/v1/posts/publishedpost/${params.postId}`)
+                setPost(response.data.post)
+                console.log(response.data)
             }catch(error){
                 console.log(error)
             }
@@ -46,11 +55,12 @@ const PostView = () =>{
 
         getPost()
     },[])
+
     return(
         <>
-            <h1 className="text-2xl font-bold">Last Posts</h1>
-            <div className="grid gap-5 mt-5">
-            {post?.title}
+            <h1 className="text-2xl font-bold">{post?.title}</h1>
+            <div className="gap-5 mt-[3rm]">
+                <TiptapRenderer content={post?.content} categories={post.categoriesdata} author={post?.username} profileImage={post?.profile_image} DatePublished={post.created_at} ></TiptapRenderer>
             </div>
         </>
     )

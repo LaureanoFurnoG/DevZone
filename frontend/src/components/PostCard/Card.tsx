@@ -14,7 +14,7 @@ const PostCard = ({Id, Title, Text, Categories, ImageProfile, UserName, DateP}: 
     const TruncateText = (text: string) =>{
         return text.slice(0, 500) + '...'
     }
-
+    //in the future i will do a custom hook with this
     const DateAgo = (DatePosted: string) =>{
         const datePosted = moment(DatePosted).fromNow();
         
@@ -24,9 +24,9 @@ const PostCard = ({Id, Title, Text, Categories, ImageProfile, UserName, DateP}: 
         <>
             <div className="bg-[#1D1D1D] p-10 cursor-pointer rounded-[7px]" id={Id.toString()}>
                 <div className="flex justify-between">
-                    <div className="flex gap-5"> 
+                    <div className="flex gap-5 w-[80%]"> 
                         <img className="border-white border-1 w-[50px] h-[50px] rounded-[100%]" src={ImageProfile} alt="profileImage" />
-                        <div>
+                        <div className="w-full">
                             <h2 className="text-xl font-bold">{UserName}</h2>
                             <p>Posted {DateAgo(DateP)}</p>
                         </div>
@@ -40,10 +40,10 @@ const PostCard = ({Id, Title, Text, Categories, ImageProfile, UserName, DateP}: 
                         */
                     }
                 </div>
-                <div className="mt-10 ml-18">
+                <div className="mt-10 sm:ml-18">
                     <h1 className="text-2xl font-bold">{Title}</h1>
                     <p className="mt-3">{TruncateText(Text)}</p>
-                    <div className="flex w-[100%] gap-5 mt-10">
+                    <div className="flex w-[100%] gap-5 mt-10 overflow-auto">
                        {Categories.map((element) => (
                         <CategoriesTags Title={element.name} />
                        ))}

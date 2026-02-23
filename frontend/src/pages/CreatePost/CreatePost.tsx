@@ -7,12 +7,7 @@ import axiosInstance from '../../api/axios';
 import { useAuth } from '../../Auth/useAuth';
 import { useAppNotification } from '../../components/Notification/Notification';
 import { useNavigate } from 'react-router-dom';
-type response = {
 
-}
-type error ={
-    response: response,
-}
 const CreatePost = () =>{
     const {me} = useAuth()
     const editorRef = useRef<any>(null)

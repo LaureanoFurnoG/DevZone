@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import PostCard from "../../components/PostCard/Card"
 import axiosInstance from "../../api/axios"
+import { useNavigate } from "react-router-dom"
 
 type TiptapNode = {
   type: string
@@ -31,6 +32,7 @@ type Post = {
 
 const Authentication = () =>{
     const [posts, setPosts] = useState<Post[]>([])
+    const navigate = useNavigate()
 
     useEffect(() =>{
         const getPosts = async () =>{
@@ -47,24 +49,26 @@ const Authentication = () =>{
     return(
         <>
             <h1 className="text-2xl font-bold">Last Posts</h1>
-            <div className="grid gap-5 mt-5">
-                {posts.slice(0, 30).map((post) => {
+            <div className="flex flex-col gap-5 mt-5">
+                {posts.map((post) => {
                     const preview =
                     post.content?.content?.[0]?.content
                         ?.map((c: TiptapNode) => c.text)
                         .join("") ?? ""
 
                     return (
-                    <PostCard
-                        key={post.id}
-                        Id={post.id}
-                        Title={post.title}
-                        Text={preview}
-                        UserName={post.username}
-                        DateP={post.created_at}
-                        Categories={post.categoriesdata}
-                        ImageProfile={post.profile_image}
-                    />
+                    <div onClick={() => navigate(`/post/${post.id}`)}>
+                        <PostCard
+                            key={post.id}
+                            Id={post.id}
+                            Title={post.title}
+                            Text={preview}
+                            UserName={post.username}
+                            DateP={post.created_at}
+                            Categories={post.categoriesdata}
+                            ImageProfile={post.profile_image}
+                        />
+                    </div>
                     )
                 })}
             </div>
