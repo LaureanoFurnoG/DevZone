@@ -1,6 +1,7 @@
 package posting
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -23,7 +24,7 @@ func NewHTTPHandler(g *echo.Group, svc Service, cfg *config.Config) error {
 	v1.GET("", listPostsHandler(svc))
 	v1.GET("/:categoryId", listPostsByCategoryIDHandler(svc))
 	v1.GET("/publishedpost/:postId", postInformationHandler(svc))
-
+	v1.DELETE("/:postId/:authorId", deletePostHandler(svc), kcVerifier.Middleware)
 	return nil
 }
 
@@ -95,7 +96,7 @@ func listPostsByCategoryIDHandler(svc Service) echo.HandlerFunc {
 		var req listPostsByCategoryIDRequest
 		CategoryIDuint, err := strconv.ParseUint(c.Param("categoryId"), 10, 64)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, "Issue with parse categoryID")
+			return c.JSON(http.StatusBadRequest, "Issue with parse categoryID")
 		}
 		req.CategoryID = uint(CategoryIDuint)
 
@@ -126,7 +127,7 @@ func postInformationHandler(svc Service) echo.HandlerFunc {
 		var req postInformationRequest
 		postID, err := strconv.ParseUint(c.Param("postId"), 10, 64)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, "Issue with parse postID")
+			return c.JSON(http.StatusBadRequest, "Issue with parse postID")
 		}
 		req.PostID = uint(postID)
 
@@ -142,5 +143,46 @@ func postInformationHandler(svc Service) echo.HandlerFunc {
 		return c.JSON(http.StatusOK, postInformationResponse{
 			Post: post,
 		})
+	}
+}
+
+type deletePostRequest struct {
+	UserID   uuid.UUID
+	PostID   uint
+	AuthorID uuid.UUID
+}
+
+func deletePostHandler(svc Service) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var req deletePostRequest
+		postID, err := strconv.ParseUint(c.Param("postId"), 10, 64)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, "issue with parse postID")
+		}
+
+		authorID, err := uuid.Parse(c.Param("authorId"))
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, "issue with parse authorID")
+		}
+
+		userID, err := uuid.Parse(fmt.Sprint(c.Get("userID")))
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, "Issue with the subject in the token")
+		}
+
+		req.PostID = uint(postID)
+		req.AuthorID = authorID
+		req.UserID = userID
+		fmt.Println(req.UserID, req.AuthorID)
+		if req.AuthorID != req.UserID {
+			return c.JSON(http.StatusUnauthorized, "Wtf bro, i think that this post isn't your post")
+		}
+
+		err = svc.DeletePost(c.Request().Context(), req.PostID, req.AuthorID, req.UserID)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, err.Error())
+		}
+
+		return c.JSON(http.StatusOK, "Post deleted successfully")
 	}
 }

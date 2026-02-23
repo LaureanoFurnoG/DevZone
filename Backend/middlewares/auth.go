@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/coreos/go-oidc/v3/oidc"
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/laureano/devzone/config"
 )
@@ -16,6 +17,7 @@ type KeycloakVerifier struct {
 }
 
 type KeycloakRoles struct {
+
 	RealmAccess struct {
 		Roles []string `json:"roles"`
 	} `json:"realm_access"`
@@ -52,7 +54,12 @@ func (k *KeycloakVerifier) Middleware(next echo.HandlerFunc) echo.HandlerFunc {
 		if err != nil {
 			return c.JSON(http.StatusUnauthorized, "Invalid token")
 		}
-
+		//set userID 
+		userID, err := uuid.Parse(idToken.Subject)
+		if err != nil{
+			return c.JSON(http.StatusUnauthorized, "Invalid subject token")
+		}
+		
 		var claims map[string]interface{}
 		if err := idToken.Claims(&claims); err != nil {
 			return c.JSON(http.StatusUnauthorized, "Failed to parse claims")
@@ -64,6 +71,7 @@ func (k *KeycloakVerifier) Middleware(next echo.HandlerFunc) echo.HandlerFunc {
 		}
 
 		c.Set("claims", claims)
+		c.Set("userID", userID)
 		c.Set("roles", roles.RealmAccess.Roles)
 
 		return next(c)

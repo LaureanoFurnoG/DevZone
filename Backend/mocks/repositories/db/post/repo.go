@@ -64,6 +64,20 @@ func (mr *MockRepositoryDB_PostMockRecorder) CreatePost(ctx, tx, post interface{
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePost", reflect.TypeOf((*MockRepositoryDB_Post)(nil).CreatePost), ctx, tx, post)
 }
 
+// DeletePost mocks base method.
+func (m *MockRepositoryDB_Post) DeletePost(ctx context.Context, postId uint, tx *gorm.DB) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeletePost", ctx, postId, tx)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeletePost indicates an expected call of DeletePost.
+func (mr *MockRepositoryDB_PostMockRecorder) DeletePost(ctx, postId, tx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeletePost", reflect.TypeOf((*MockRepositoryDB_Post)(nil).DeletePost), ctx, postId, tx)
+}
+
 // ListPosts mocks base method.
 func (m *MockRepositoryDB_Post) ListPosts(ctx context.Context, tx *gorm.DB) ([]post.Post, error) {
 	m.ctrl.T.Helper()
