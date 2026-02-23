@@ -144,3 +144,18 @@ func (r *postsRepository) PostInformation(ctx context.Context, tx *gorm.DB, post
 
 	return &post, nil
 }
+
+func (r *postsRepository) DeletePost(ctx context.Context, postId uint, tx *gorm.DB) error {
+	postDAO := models.Post{}
+	relationDAO := models.Relation_categories{}
+
+	if err := tx.WithContext(ctx).Where("post_id = ?", postId).Delete(&relationDAO).Error; err != nil {
+		return err
+	}
+
+	if err := tx.WithContext(ctx).Where("id = ?", postId).Delete(&postDAO).Error; err != nil {
+		return err
+	}
+
+	return nil
+}

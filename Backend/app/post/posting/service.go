@@ -15,6 +15,7 @@ type Service interface {
 	ListPosts(ctx context.Context) ([]post.Post, error)
 	ListPostsByCategoryID(ctx context.Context, categoryID uint) ([]post.Post, error)
 	PostInformationByID(ctx context.Context, postID uint) (*post.Post, error)
+	DeletePost(ctx context.Context, postId uint, authorId uuid.UUID, userID uuid.UUID) error
 }
 
 type service struct {
@@ -237,6 +238,16 @@ func (s *service) PostInformationByID(ctx context.Context, postID uint) (*post.P
 		post.ProfileImage = user.ProfileImage
 		post.Username = user.Username
 	}
-	
+
 	return post, nil
+}
+
+func (s *service) DeletePost(ctx context.Context, postId uint, authorId uuid.UUID, userID uuid.UUID) error {
+	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		err := s.repository.DeletePost(ctx, postId, tx)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
 }
