@@ -182,7 +182,7 @@ const MobileToolbarContent = ({
   </>
 )
 
-const SimpleEditor = forwardRef((props, ref) => {
+const SimpleEditor = forwardRef((_, ref) => {
   const isMobile = useIsBreakpoint()
   const { height } = useWindowSize()
   const [mobileView, setMobileView] = useState<"main" | "highlighter" | "link">(

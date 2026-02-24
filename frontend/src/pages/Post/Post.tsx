@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react"
-import PostCard from "../../components/PostCard/Card"
 import axiosInstance from "../../api/axios"
 import { useParams } from "react-router";
 import { TiptapRenderer } from "../../components/PostRender/Render";
