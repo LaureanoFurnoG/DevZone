@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react"
 import PostCard from "../../components/PostCard/Card"
 import axiosInstance from "../../api/axios"
-import { useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom"
+import { useAuth } from "../../Auth/useAuth"
 
 type TiptapNode = {
   type: string
@@ -23,6 +24,7 @@ type Post = {
   id: number
   title: string
   content: TiptapDocument
+  id_user: string
   username: string
   profile_image: string
   created_at: string
@@ -31,14 +33,12 @@ type Post = {
 
 const Home = () =>{
     const [posts, setPosts] = useState<Post[]>([])
-    const navigate = useNavigate()
-
+    const {me} = useAuth()
     useEffect(() =>{
         const getPosts = async () =>{
             try{
                 const response = await axiosInstance.get('/devzone-api/v1/posts')
                 setPosts(response.data.posts)
-                console.log(response.data.posts)
             }catch(error){
                 console.log(error)
             }
@@ -47,6 +47,9 @@ const Home = () =>{
         getPosts()
     },[])
 
+    const handleDelete = (id: number) => {
+        setPosts(prev => prev.filter(post => post.id !== id))
+    }
 
     return(
         <>
@@ -59,18 +62,21 @@ const Home = () =>{
                         .join("") ?? ""
 
                     return (
-                        <div onClick={() => navigate(`/post/${post.id}`)}>
+                        <Link to={`/post/${post.id}`}  className="block !text-white"> 
                             <PostCard
                                 key={post.id}
                                 Id={post.id}
+                                AuthorID={post.id_user}
                                 Title={post.title}
                                 Text={preview}
                                 UserName={post.username}
                                 DateP={post.created_at}
                                 Categories={post.categoriesdata}
-                                ImageProfile={post.profile_image}
+                                ImageProfile={post.profile_image} 
+                                userSessionID={me?.sub}
+                                onDelete={handleDelete}
                             />
-                        </div>
+                        </Link>
                     )
                 })}
             </div>

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react"
 import PostCard from "../../components/PostCard/Card"
 import axiosInstance from "../../api/axios"
-import { useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom"
+import { useAuth } from "../../Auth/useAuth"
 
 type TiptapNode = {
   type: string
@@ -23,17 +24,16 @@ type Post = {
   id: number
   title: string
   content: TiptapDocument
+  id_user: string
   username: string
   profile_image: string
   created_at: string
   categoriesdata: Category[]
 }
 
-
 const ReleaseNotes = () =>{
     const [posts, setPosts] = useState<Post[]>([])
-    const navigate = useNavigate()
-
+    const {me} = useAuth()
     useEffect(() =>{
         const getPosts = async () =>{
             try{
@@ -46,6 +46,11 @@ const ReleaseNotes = () =>{
 
         getPosts()
     },[])
+
+    const handleDelete = (id: number) => {
+        setPosts(prev => prev.filter(post => post.id !== id))
+    }
+
     return(
         <>
             <h1 className="text-2xl font-bold">Last Posts</h1>
@@ -57,18 +62,21 @@ const ReleaseNotes = () =>{
                         .join("") ?? ""
 
                     return (
-                    <div onClick={() => navigate(`/post/${post.id}`)}>
-                        <PostCard
-                            key={post.id}
-                            Id={post.id}
-                            Title={post.title}
-                            Text={preview}
-                            UserName={post.username}
-                            DateP={post.created_at}
-                            Categories={post.categoriesdata}
-                            ImageProfile={post.profile_image}
-                        />
-                    </div>
+                        <Link to={`/post/${post.id}`}  className="block !text-white"> 
+                            <PostCard
+                                key={post.id}
+                                Id={post.id}
+                                AuthorID={post.id_user}
+                                Title={post.title}
+                                Text={preview}
+                                UserName={post.username}
+                                DateP={post.created_at}
+                                Categories={post.categoriesdata}
+                                ImageProfile={post.profile_image} 
+                                userSessionID={me?.sub}
+                                onDelete={handleDelete}
+                            />
+                        </Link>
                     )
                 })}
             </div>
