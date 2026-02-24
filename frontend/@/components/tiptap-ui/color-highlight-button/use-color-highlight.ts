@@ -175,6 +175,7 @@ export function canColorHighlight(
     return editor.can().setMark("highlight")
   } else {
     if (!isExtensionAvailable(editor, ["nodeBackground"])) return false
+    return true
   }
 }
 
