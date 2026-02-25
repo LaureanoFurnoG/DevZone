@@ -27,3 +27,11 @@ type Relation_categories struct {
 	CategoryID uint       `gorm:"column:categories_id"`
 	Category   Categories `gorm:"foreignKey:categories_id;references:ID"`
 }
+
+type User struct{
+  gorm.Model
+  Id uuid.UUID `gorm:"primarykey"`
+  Nickname string `gorm:"primarykey"`
+  Email string `gorm:"primarykey"`
+  AvatarUrl string `gorm:"primarykey"`
+}

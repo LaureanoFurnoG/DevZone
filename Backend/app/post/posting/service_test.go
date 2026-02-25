@@ -10,8 +10,8 @@ import (
 	"github.com/laureano/devzone/app/post/post"
 	"github.com/laureano/devzone/config"
 	"github.com/laureano/devzone/database/connect"
-	mockKeycloak "github.com/laureano/devzone/mocks/keycloak"
 	mockPost "github.com/laureano/devzone/mocks/repositories/db/post"
+	mockUser "github.com/laureano/devzone/mocks/repositories/db/user"
 	"github.com/stretchr/testify/require"
 	"gorm.io/datatypes"
 )
@@ -26,8 +26,9 @@ func TestCreatePosting(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 
 	mockPost := mockPost.NewMockRepositoryDB_Post(mockCtrl)
-	mockKeycloak := mockKeycloak.NewMockRepositoryIdentities(mockCtrl)
-	svc := NewService(db, mockKeycloak, mockPost)
+	mockUser := mockUser.NewMockRepositoryDB_User(mockCtrl)
+
+	svc := NewService(db, mockPost, mockUser)
 
 	type ContentJson struct {
 		Example string `json:"example"`
