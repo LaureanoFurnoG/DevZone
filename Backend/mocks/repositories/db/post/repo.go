@@ -122,3 +122,18 @@ func (mr *MockRepositoryDB_PostMockRecorder) PostInformation(ctx, tx, postId int
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PostInformation", reflect.TypeOf((*MockRepositoryDB_Post)(nil).PostInformation), ctx, tx, postId)
 }
+
+// SearchPost mocks base method.
+func (m *MockRepositoryDB_Post) SearchPost(ctx context.Context, title string, tx *gorm.DB) ([]post.Post, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SearchPost", ctx, title, tx)
+	ret0, _ := ret[0].([]post.Post)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// SearchPost indicates an expected call of SearchPost.
+func (mr *MockRepositoryDB_PostMockRecorder) SearchPost(ctx, title, tx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SearchPost", reflect.TypeOf((*MockRepositoryDB_Post)(nil).SearchPost), ctx, title, tx)
+}

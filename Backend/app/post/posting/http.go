@@ -22,6 +22,7 @@ func NewHTTPHandler(g *echo.Group, svc Service, userSvc middlewares.UserSyncer, 
 
 	v1.POST("", createPostHandler(svc), kcVerifier.Middleware)
 	v1.GET("", listPostsHandler(svc))
+	v1.GET("/searchpost/:title", listSearchPostsHandler(svc))
 	v1.GET("/:categoryId", listPostsByCategoryIDHandler(svc))
 	v1.GET("/publishedpost/:postId", postInformationHandler(svc))
 	v1.DELETE("/:postId/:authorId", deletePostHandler(svc), kcVerifier.Middleware)
@@ -184,5 +185,34 @@ func deletePostHandler(svc Service) echo.HandlerFunc {
 		}
 
 		return c.JSON(http.StatusOK, "Post deleted successfully")
+	}
+}
+
+type listSearchPostsTitleResponse struct {
+	Posts []post.Post `json:"posts"`
+}
+
+type listSearchPostsTitleRequest struct {
+	Title string `json:"title"`
+}
+
+func listSearchPostsHandler(svc Service) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var req listSearchPostsTitleRequest
+
+		req.Title = c.Param("title")
+
+		posts, err := svc.SearchPost(c.Request().Context(), req.Title)
+		fmt.Println(posts)
+		if err != nil {
+			if err.Error() == "Post not exist" {
+				return c.JSON(http.StatusNotFound, map[string]string{"message": err.Error()})
+			}
+			return c.JSON(http.StatusInternalServerError, err)
+		}
+
+		return c.JSON(http.StatusOK, listSearchPostsTitleResponse{
+			Posts: posts,
+		})
 	}
 }

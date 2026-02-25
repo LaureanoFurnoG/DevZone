@@ -3,6 +3,7 @@ package postrepository
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/laureano/devzone/app/post/post"
 	"github.com/laureano/devzone/database/models"
@@ -158,4 +159,38 @@ func (r *postsRepository) DeletePost(ctx context.Context, postId uint, tx *gorm.
 	}
 
 	return nil
+}
+
+func (r *postsRepository) SearchPost(ctx context.Context, title string, tx *gorm.DB) ([]post.Post, error) {
+	var postsDAO []models.Post
+	result := tx.WithContext(ctx).Where("title ILIKE ?", fmt.Sprintf("%%%s%%", title)).Order("created_at desc").
+		Preload("Categories").
+		Find(&postsDAO)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		return nil, errors.New("Post not exist")
+	}
+
+	posts := make([]post.Post, 0, len(postsDAO))
+	for _, p := range postsDAO {
+		postCurrent := make([]post.CategoriesPost, 0, len(p.Categories))
+		for _, c := range p.Categories {
+			postCurrent = append(postCurrent, post.CategoriesPost{ID: c.ID, Name: c.Name})
+		}
+
+		posts = append(posts, post.Post{
+			ID:             p.ID,
+			Id_user:        p.Id_user,
+			Title:          p.Title,
+			Content:        p.Content,
+			CreatedAt:      p.CreatedAt,
+			CategoriesData: postCurrent,
+		})
+	}
+
+	return posts, nil
 }

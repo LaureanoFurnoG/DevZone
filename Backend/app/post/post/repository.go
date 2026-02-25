@@ -13,4 +13,5 @@ type RepositoryDB_Post interface {
 	ListPostsByID(ctx context.Context, tx *gorm.DB, categoryID uint) ([]Post, error)
 	PostInformation(ctx context.Context, tx *gorm.DB, postId uint) (*Post, error)
 	DeletePost(ctx context.Context, postId uint, tx *gorm.DB) error
+	SearchPost(ctx context.Context, title string, tx *gorm.DB) ([]Post, error)
 }
