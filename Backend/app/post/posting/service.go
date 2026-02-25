@@ -16,6 +16,7 @@ type Service interface {
 	ListPostsByCategoryID(ctx context.Context, categoryID uint) ([]post.Post, error)
 	PostInformationByID(ctx context.Context, postID uint) (*post.Post, error)
 	DeletePost(ctx context.Context, postId uint, authorId uuid.UUID, userID uuid.UUID) error
+	SearchPost(ctx context.Context, title string) ([]post.Post, error)
 }
 
 type service struct {
@@ -83,7 +84,7 @@ func (s *service) enrichPostsWithAuthors(ctx context.Context, posts []post.Post)
 			return r.err
 		}
 		if r.user == nil {
-			continue 
+			continue
 		}
 		userMap[r.id] = r.user
 	}
@@ -159,4 +160,15 @@ func (s *service) DeletePost(ctx context.Context, postId uint, authorId uuid.UUI
 		}
 		return nil
 	})
+}
+
+func (s *service) SearchPost(ctx context.Context, title string) ([]post.Post, error) {
+	posts, err := s.repository.SearchPost(ctx, title, s.db.WithContext(ctx))
+	if err != nil {
+		return nil, err
+	}
+	if err := s.enrichPostsWithAuthors(ctx, posts); err != nil {
+		return nil, err
+	}
+	return posts, nil
 }
