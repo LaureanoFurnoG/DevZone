@@ -12,28 +12,30 @@ import (
 	"github.com/laureano/devzone/config"
 )
 
+type UserSyncer interface {
+	RegisterUser(ctx context.Context, id_user uuid.UUID, nickname string, email string, avatar_url string) error
+}
+
 type KeycloakVerifier struct {
-	Verifier *oidc.IDTokenVerifier
+	Verifier    *oidc.IDTokenVerifier
+	userService UserSyncer
 }
 
-type KeycloakRoles struct {
-
-	RealmAccess struct {
-		Roles []string `json:"roles"`
-	} `json:"realm_access"`
-}
-
-func NewKeycloakVerifier(cfg *config.Config) (*KeycloakVerifier, error) {
+func NewKeycloakVerifier(cfg *config.Config, userService UserSyncer) (*KeycloakVerifier, error) {
 	ctx := context.Background()
 	provider, err := oidc.NewProvider(ctx, fmt.Sprintf("%s/realms/%s", cfg.KeycloakRealmURL, cfg.KeycloakRealm))
 	if err != nil {
 		return nil, err
 	}
 	return &KeycloakVerifier{
-		Verifier: provider.Verifier(&oidc.Config{
-			SkipClientIDCheck: true,
-		}),
+		Verifier:    provider.Verifier(&oidc.Config{SkipClientIDCheck: true}),
+		userService: userService,
 	}, nil
+}
+type KeycloakRoles struct {
+	RealmAccess struct {
+		Roles []string `json:"roles"`
+	} `json:"realm_access"`
 }
 
 func (k *KeycloakVerifier) Middleware(next echo.HandlerFunc) echo.HandlerFunc {
@@ -48,18 +50,17 @@ func (k *KeycloakVerifier) Middleware(next echo.HandlerFunc) echo.HandlerFunc {
 			return c.JSON(http.StatusUnauthorized, "Malformed authorization header")
 		}
 
-		token := parts[1]
 		ctx := context.Background()
-		idToken, err := k.Verifier.Verify(ctx, token)
+		idToken, err := k.Verifier.Verify(ctx, parts[1])
 		if err != nil {
 			return c.JSON(http.StatusUnauthorized, "Invalid token")
 		}
-		//set userID 
+
 		userID, err := uuid.Parse(idToken.Subject)
-		if err != nil{
+		if err != nil {
 			return c.JSON(http.StatusUnauthorized, "Invalid subject token")
 		}
-		
+
 		var claims map[string]interface{}
 		if err := idToken.Claims(&claims); err != nil {
 			return c.JSON(http.StatusUnauthorized, "Failed to parse claims")
@@ -70,10 +71,30 @@ func (k *KeycloakVerifier) Middleware(next echo.HandlerFunc) echo.HandlerFunc {
 			return c.JSON(http.StatusUnauthorized, "Failed to parse roles")
 		}
 
+		err = k.userService.RegisterUser(
+			ctx,
+			userID,
+			getString(claims, "preferred_username"),
+			getString(claims, "email"),
+			getString(claims, "profileImage"),
+		)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, "Failed to sync user")
+		}
+
 		c.Set("claims", claims)
 		c.Set("userID", userID)
 		c.Set("roles", roles.RealmAccess.Roles)
 
 		return next(c)
 	}
+}
+
+func getString(claims map[string]interface{}, key string) string {
+	if val, ok := claims[key]; ok {
+		if str, ok := val.(string); ok {
+			return str
+		}
+	}
+	return ""
 }

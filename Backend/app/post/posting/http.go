@@ -13,9 +13,9 @@ import (
 	"gorm.io/datatypes"
 )
 
-func NewHTTPHandler(g *echo.Group, svc Service, cfg *config.Config) error {
+func NewHTTPHandler(g *echo.Group, svc Service, userSvc middlewares.UserSyncer, cfg *config.Config) error {
 	v1 := g.Group("/v1/posts")
-	kcVerifier, err := middlewares.NewKeycloakVerifier(cfg)
+	kcVerifier, err := middlewares.NewKeycloakVerifier(cfg, userSvc)
 	if err != nil {
 		return err
 	}

@@ -7,11 +7,12 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/laureano/devzone/app/categories_tag/categorizing"
 	"github.com/laureano/devzone/app/post/posting"
+	"github.com/laureano/devzone/app/user/userManage"
 	"github.com/laureano/devzone/config"
 	"github.com/laureano/devzone/database/connect"
 	categoryrepository "github.com/laureano/devzone/database/repositories/category_repository"
 	postrepository "github.com/laureano/devzone/database/repositories/post_repository"
-	"github.com/laureano/devzone/identity/keycloak"
+	userrepository "github.com/laureano/devzone/database/repositories/user_repository"
 )
 
 func NewServer(cfg *config.Config) (*echo.Echo, error) {
@@ -37,13 +38,15 @@ func NewServer(cfg *config.Config) (*echo.Echo, error) {
 	r := e.Group("/devzone-api")
 
 	postRepositoryDB := postrepository.NewPostRepository(db)
-	identitiesRepository := keycloak.NewKeycloakRepository(cfg)
-	postService := posting.NewService(db, identitiesRepository, postRepositoryDB)
+	userRepositoryDB := userrepository.NewUserRepository(db)
+
+	postService := posting.NewService(db, postRepositoryDB, userRepositoryDB)
 
 	categoryRepositoryDB := categoryrepository.NewCategoryRepository(db)
 	categoryService := categorizing.NewService(db, categoryRepositoryDB)
+	userSvc := userManage.NewService(db, userRepositoryDB)
 
-	if err := posting.NewHTTPHandler(r, postService, cfg); err != nil {
+	if err := posting.NewHTTPHandler(r, postService, userSvc, cfg); err != nil {
 		return nil, err
 	}
 	categorizing.NewHTTPHandler(r, categoryService)
