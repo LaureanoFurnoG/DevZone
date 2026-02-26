@@ -99,6 +99,21 @@ func (s *service) enrichPostsWithAuthors(ctx context.Context, posts []post.Post)
 	return nil
 }
 
+func (s *service) enrichPostWithAuthor(ctx context.Context, p *post.Post) error {
+	userInfo, err := s.repositoryUser.GetUserByID(ctx, p.Id_user, s.db.WithContext(ctx))
+	if err != nil {
+		return err
+	}
+
+	if userInfo == nil {
+		return nil 
+	}
+
+	p.ProfileImage = &userInfo.AvatarUrl
+	p.Username = userInfo.Nickname
+	return nil
+}
+
 func (s *service) CreatePost(ctx context.Context, categories []uint, Id_user uuid.UUID, title string, content datatypes.JSON) error {
 	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		postDAO := &post.Post{
@@ -147,9 +162,11 @@ func (s *service) PostInformationByID(ctx context.Context, postID uint) (*post.P
 	if err != nil {
 		return nil, err
 	}
-	if err := s.enrichPostsWithAuthors(ctx, []post.Post{*p}); err != nil {
+
+	if err := s.enrichPostWithAuthor(ctx, p); err != nil {
 		return nil, err
 	}
+
 	return p, nil
 }
 func (s *service) DeletePost(ctx context.Context, postId uint, authorId uuid.UUID, userID uuid.UUID) error {

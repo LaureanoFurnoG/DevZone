@@ -103,9 +103,6 @@ func listPostsByCategoryIDHandler(svc Service) echo.HandlerFunc {
 
 		posts, err := svc.ListPostsByCategoryID(c.Request().Context(), req.CategoryID)
 		if err != nil {
-			if err.Error() == "Post not exist" {
-				return c.JSON(http.StatusNotFound, map[string]string{"message": err.Error()})
-			}
 			return c.JSON(http.StatusInternalServerError, err)
 		}
 
