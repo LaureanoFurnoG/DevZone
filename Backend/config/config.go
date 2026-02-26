@@ -48,7 +48,7 @@ func Load() *Config {
 		DBHost:           "localhost",
 		DBPort:           dbPort,
 		DBUser:           "postgres",
-		DBPassword:       "Laureano",
+		DBPassword:       "secret",
 		DBName:           "devzone",
 
 		KeycloakRealm:    "devzone",
@@ -56,6 +56,6 @@ func Load() *Config {
 		ClientID:         "backend-api",
 		KeycloakUser:     "admin",
 		KeycloakPassword: "secret",
-		KcRealmSecret:    "iFo8lRj1o3vcuckjxovFPOOlF0XDrCMF",
+		KcRealmSecret:    "secret",
 	}
 }
