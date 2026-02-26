@@ -17,6 +17,7 @@ func NewHTTPHandler(g *echo.Group, svc Service, cfg *config.Config) error {
 	}
 
 	v1.POST("", createUserHandler(svc), kcVerifier.Middleware)
+	v1.GET("/:userId", fetcUserHandler(svc), kcVerifier.Middleware)
 	return nil
 }
 
@@ -41,5 +42,41 @@ func createUserHandler(svc Service) echo.HandlerFunc {
 		}
 
 		return c.JSON(http.StatusCreated, nil)
+	}
+}
+
+type fetchUser struct {
+	Id uuid.UUID `json:"id"`
+}
+
+type userInfo struct {
+	Nickname  string `json:"nickname"`
+	Email     string `json:"email"`
+	AvatarUrl string `json:"avatar_url"`
+}
+
+func fetcUserHandler(svc Service) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var req fetchUser
+
+		idUser := c.Param("userId")
+
+		idUUID, err := uuid.Parse(idUser)
+		if err != nil{
+			return err
+		}
+		req.Id = idUUID
+		
+		user, err := svc.FetchUser(c.Request().Context(), req.Id)
+		
+		if err != nil {
+			return err
+		}
+
+		return c.JSON(http.StatusCreated, userInfo{
+			Nickname: user.Nickname,
+			Email: user.Email,
+			AvatarUrl: user.AvatarUrl,
+		})
 	}
 }

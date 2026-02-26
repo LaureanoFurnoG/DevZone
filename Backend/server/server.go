@@ -49,6 +49,11 @@ func NewServer(cfg *config.Config) (*echo.Echo, error) {
 	if err := posting.NewHTTPHandler(r, postService, userSvc, cfg); err != nil {
 		return nil, err
 	}
+	
+	if err := userManage.NewHTTPHandler(r, userSvc, cfg); err != nil{
+		return nil, err
+	}
+
 	categorizing.NewHTTPHandler(r, categoryService)
 	log.Printf("Server listening on port %v", cfg.ServerPort)
 	return e, nil

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import keycloak from "./keycloak";
 
 import { AuthContext, type Me } from "./AuthContext";
+import axiosInstance from "../api/axios";
 
 export const AuthProvider = ({children}: {children: React.ReactNode}) => {
     const [isLoading, setLoading] = useState(true)
@@ -10,6 +11,15 @@ export const AuthProvider = ({children}: {children: React.ReactNode}) => {
     const [me, setMe] = useState<Me | null>(null);
 
     useEffect(() =>{
+        const getProfileDBdata = async (idUser: string | undefined) =>{
+            try{
+                const response = await axiosInstance.get(`/devzone-api/v1/user/${idUser}`)
+                console.log(response)
+                return response.data?.avatar_url
+            }catch(err: any){
+                console.log(err)
+            }
+        }
         keycloak.init({
             onLoad: "check-sso",
             pkceMethod: "S256",
@@ -17,7 +27,7 @@ export const AuthProvider = ({children}: {children: React.ReactNode}) => {
             silentCheckSsoRedirectUri:
             window.location.origin + "/silent-check-sso.html",
         })
-        .then((authenticated) =>{
+        .then(async (authenticated) =>{
             setAuthenticated(authenticated)
             setToken(keycloak.token)
             if (keycloak.tokenParsed){
@@ -27,7 +37,8 @@ export const AuthProvider = ({children}: {children: React.ReactNode}) => {
                 const nickName = keycloak.tokenParsed.preferred_username
                 const token = keycloak.token
                 const sub = keycloak.subject
-                const profileImage = keycloak.tokenParsed.profileImage
+                const profileImage = await getProfileDBdata(sub)
+                console.log(profileImage)
                 setMe({name, email, lastname, token, sub, nickName, profileImage})
                 if (token != null){
                     sessionStorage.setItem('auth', token)

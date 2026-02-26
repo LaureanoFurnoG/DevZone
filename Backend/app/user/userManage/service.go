@@ -2,7 +2,6 @@ package userManage
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/laureano/devzone/app/user/user"
@@ -11,6 +10,7 @@ import (
 
 type Service interface {
 	RegisterUser(ctx context.Context, id_user uuid.UUID, nickname string, email string, avatar_url string) error
+	FetchUser(ctx context.Context, id_user uuid.UUID) (*user.User, error)
 }
 
 type service struct {
@@ -42,7 +42,21 @@ func (s *service) RegisterUser(ctx context.Context, id_user uuid.UUID, nickname 
 			Email:     email,
 			AvatarUrl: avatar_url,
 		}
-		fmt.Print("aca")
 		return s.repository.RegisterUser(ctx, newUser, tx)
 	})
+}
+
+func (s *service) FetchUser(ctx context.Context, id_user uuid.UUID) (*user.User, error) {
+	userFound, err := s.repository.GetUserByID(ctx, id_user, s.db.WithContext(ctx))
+	if err != nil {
+		return nil, err
+	}
+	userInfo := user.User{
+		Nickname:  userFound.Nickname,
+		Email:     userFound.Email,
+		AvatarUrl: userFound.AvatarUrl,
+	}
+
+	return &userInfo, nil
+
 }

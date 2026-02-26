@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
@@ -13,7 +15,8 @@ type Categories struct {
 
 type Post struct {
 	gorm.Model
-	Id_user    uuid.UUID      `gorm:"id_user"`
+	Id_user    uuid.UUID      `gorm:"type:uuid;index"`
+	User       User           `gorm:"foreignKey:Id_user;references:ID"`
 	Title      string         `gorm:"title"`
 	Content    datatypes.JSON `gorm:"content"`
 	Categories []Categories   `gorm:"many2many:relation_categories;"`
@@ -28,10 +31,12 @@ type Relation_categories struct {
 	Category   Categories `gorm:"foreignKey:categories_id;references:ID"`
 }
 
-type User struct{
-  gorm.Model
-  Id uuid.UUID `gorm:"primarykey"`
-  Nickname string `gorm:"primarykey"`
-  Email string `gorm:"primarykey"`
-  AvatarUrl string `gorm:"primarykey"`
+type User struct {
+	ID        uuid.UUID `gorm:"type:uuid;primaryKey"`
+	Nickname  string    `gorm:"nickname"`
+	Email     string    `gorm:"email"`
+	AvatarUrl string    `gorm:"avatar_url"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
