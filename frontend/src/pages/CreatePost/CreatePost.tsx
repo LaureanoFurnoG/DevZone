@@ -15,7 +15,7 @@ const CreatePost = () =>{
     const [selectCategories, setSelectCategories] = useState<string | string[]>()
     const { notify, contextHolder } = useAppNotification()
     const navigate = useNavigate()
-
+    const [loading, setLoading] = useState(false)
     const handleChange = (value: string | string[]) => {
         setSelectCategories(value)
     };
@@ -27,7 +27,7 @@ const CreatePost = () =>{
     const createPost = async () => {
         try{
             if (!editorRef.current) return
-
+            setLoading(true)
             const titleInput = document.getElementById('Title-input') as HTMLInputElement
             const title = titleInput?.value
 
@@ -56,6 +56,7 @@ const CreatePost = () =>{
                 homeNavigate()
             },3000)
         }catch(error: any){
+            setLoading(false)
             notify("Unauthorized", error.response.data, "error")
         }
     }
@@ -99,6 +100,7 @@ const CreatePost = () =>{
                 !h-12
                 !mt-10`}
                 onClick={() => createPost()}
+                loading={loading}
             >
                 Create Post
             </Button>

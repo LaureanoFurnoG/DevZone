@@ -142,7 +142,7 @@ const MainLayout: React.FC = () => {
                     </Button>
                     {isAuthenticated ? (
                         <div className='flex justify-center items-center p-5 border-t-2 mt-8 border-white w-full gap-3'>
-                            <img className='rounded-full w-10 h-10 !bg-red-500' src={me?.profileImage} alt="" />
+                            {me?.profileImage ?  <img className='rounded-full w-10 h-10 !bg-red-500' src={me?.profileImage} alt="" /> : <p className='rounded-full w-10 h-10 !bg-[#364492] text-white flex justify-center items-center'>{(me?.name?.[0] ?? "")}</p>}
                             {!collapsed && 
                                 <div className='!w-[80%]'>
                                 <h2 className='text-white text-xl font-semibold'>{me?.name}</h2>

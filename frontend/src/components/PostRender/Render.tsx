@@ -61,11 +61,28 @@ export const TiptapRenderer: React.FC<TiptapRendererProps> = ({
       
       return datePosted
   }
-  
+
+  const stringToColor = (str: string) => {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+
+    const r = ((hash >> 16) & 0xff) % 140;
+    const g = ((hash >> 8) & 0xff) % 140;
+    const b = (hash & 0xff) % 140;
+    return `#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`;
+  };
+
   return ( //this is funny, i'm tire and i don't fully understand the Renderer with json and the same styles, so i just implement the classNames of tiptap editor xD, i'm think is more simple
     <div className={`${className} !mt-5`}>
         <div className='flex items-center gap-5 border-b-1 border-white  pb-[30px] pl-[3rem] pt-[30px]'>
-          <img className='h-15 w-15 rounded-[100px] border-1 border-white' src={profileImage} alt="avatar of the user (profile image)" />
+          {profileImage ? <img className="border-white border-1 w-[50px] h-[50px] rounded-[100%]" src={profileImage} alt="profileImage" /> : <p 
+              style={{ backgroundColor: stringToColor(author ?? "?") }} 
+              className="border-white p-4 border-1 w-[50px] h-[50px] rounded-[100%] text-white flex justify-center items-center"
+          >
+              {author?.[0] ?? ""}
+          </p>}
           <div>
             <h2 className='text-2xl font-bold'>{author}</h2>
             <p className='text-gray-500'>Posted {DateAgo(DatePublished)}</p>
