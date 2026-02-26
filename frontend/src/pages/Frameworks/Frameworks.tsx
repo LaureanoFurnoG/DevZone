@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react"
 import PostCard from "../../components/PostCard/Card"
-import axiosInstance from "../../api/axios"
 import { Link } from "react-router-dom"
 import { useAuth } from "../../Auth/useAuth"
+import { usePosts } from "../../customHooks/usePosts/usePosts"
 
 type TiptapNode = {
   type: string
@@ -10,43 +9,9 @@ type TiptapNode = {
   text?: string
 }
 
-type TiptapDocument = {
-  type: "doc"
-  content: TiptapNode[]
-}
-
-type Category = {
-  id: number
-  name: string
-}
-
-type Post = {
-  id: number
-  title: string
-  content: TiptapDocument
-  id_user: string
-  username: string
-  profile_image: string
-  created_at: string
-  categoriesdata: Category[]
-}
-
 const Frameworks = () =>{
-    const [posts, setPosts] = useState<Post[]>([])
+    const {posts, setPosts} = usePosts(5)
     const {me} = useAuth()
-    useEffect(() =>{
-        const getPosts = async () =>{
-            try{
-                const response = await axiosInstance.get(`/devzone-api/v1/posts/${5}`)
-                setPosts(response.data.posts)
-            }catch(error){
-                console.log(error)
-            }
-        }
-
-        getPosts()
-    },[])
- 
     const handleDelete = (id: number) => {
         setPosts(prev => prev.filter(post => post.id !== id))
     }
