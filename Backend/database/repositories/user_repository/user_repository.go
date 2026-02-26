@@ -20,7 +20,7 @@ func NewUserRepository(db *gorm.DB) user.RepositoryDB_User {
 
 func (r *userRepository) RegisterUser(ctx context.Context, user user.User, tx *gorm.DB) error {
 	userDAO := models.User{
-		Id:        user.Id,
+		ID:        user.Id,
 		Nickname:  user.Nickname,
 		AvatarUrl: user.AvatarUrl,
 		Email:     user.Email,
@@ -30,7 +30,7 @@ func (r *userRepository) RegisterUser(ctx context.Context, user user.User, tx *g
 		return err
 	}
 
-	user.Id = userDAO.Id
+	user.Id = userDAO.ID
 	return nil
 }
 
@@ -45,7 +45,7 @@ func (r *userRepository) GetUserByID(ctx context.Context, id uuid.UUID, tx *gorm
 	}
 
 	return &user.User{
-		Id:        userDAO.Id,
+		Id:        userDAO.ID,
 		Nickname:  userDAO.Nickname,
 		Email:     userDAO.Email,
 		AvatarUrl: userDAO.AvatarUrl,
