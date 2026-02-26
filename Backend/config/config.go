@@ -21,6 +21,8 @@ type Config struct {
 	ClientID         string
 	KeycloakUser     string
 	KeycloakPassword string
+
+	ProjectID 		 string
 }
 
 func mustGetEnv(key string) string {
@@ -57,5 +59,8 @@ func Load() *Config {
 		KeycloakUser:     "admin",
 		KeycloakPassword: "secret",
 		KcRealmSecret:    "secret",
+
+		//storage
+		ProjectID: 		  "gs://builder-8f2f0.firebasestorage.app",
 	}
 }
