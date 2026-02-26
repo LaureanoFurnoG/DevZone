@@ -10,7 +10,7 @@ type TiptapNode = {
 }
 
 const Home = () =>{
-    const {posts, setPosts} = usePosts(null)
+    const {posts, setPosts} = usePosts({Id: null, SearchTitle: undefined})
     const {me} = useAuth()
     const handleDelete = (id: number) => {
         setPosts(prev => prev.filter(post => post.id !== id))

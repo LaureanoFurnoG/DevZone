@@ -19,7 +19,7 @@ import { LuLibraryBig } from "react-icons/lu";
 import { GoPackageDependencies } from "react-icons/go";
 import { FaShieldAlt } from "react-icons/fa";
 import { CiServer } from "react-icons/ci";
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom'; 
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './Auth/useAuth';
 
@@ -33,7 +33,7 @@ const MainLayout: React.FC = () => {
     const {
         token: { colorBgContainer },
     } = theme.useToken();
-
+    const [searchTitle, setSearchTitle] = useState<string>("");
     const navigate = useNavigate()
     const {me, login, logout, isAuthenticated} = useAuth()
     const [currentPage, setCurrentPage] = useState<string>('1')
@@ -81,7 +81,10 @@ const MainLayout: React.FC = () => {
     }, [pathname]);
 
 
-    const onSearch: SearchProps['onSearch'] = (value, _e, info) => console.log(info?.source, value);
+    const onSearch: SearchProps['onSearch'] = (value) =>{
+        setSearchTitle(value);
+        navigate('/home'); 
+    };
 
     return (
         <Layout className="h-screen overflow-hidden">
@@ -180,7 +183,7 @@ const MainLayout: React.FC = () => {
                             height: 64,
                             }}
                         />
-                        <Search placeholder="input search text" onSearch={onSearch} className={`search-Header  ${collapsed ? "!w-[75%]" : "!hidden sm:!flex"}`} />
+                        <Search placeholder="input search text" onSearch={onSearch}  className={`search-Header  ${collapsed ? "!w-[75%]" : "!hidden sm:!flex"}`} />
                     </div>
                         {isAuthenticated &&
                             <Button
@@ -197,7 +200,7 @@ const MainLayout: React.FC = () => {
                 <Content    
                     className={`p-[12px] sm:p-[24px] sm:pl-[10%] sm:pr-[10%] h-[calc(100vh-4rem)] overflow-y-auto ${collapsed ? "":"sm:block hidden"}`}
                 >
-                <Outlet />
+                <Outlet context={{ searchTitle }} />
                 </Content>
             </Layout>
         </Layout>

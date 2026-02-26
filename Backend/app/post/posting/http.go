@@ -200,11 +200,7 @@ func listSearchPostsHandler(svc Service) echo.HandlerFunc {
 		req.Title = c.Param("title")
 
 		posts, err := svc.SearchPost(c.Request().Context(), req.Title)
-		fmt.Println(posts)
 		if err != nil {
-			if err.Error() == "Post not exist" {
-				return c.JSON(http.StatusNotFound, map[string]string{"message": err.Error()})
-			}
 			return c.JSON(http.StatusInternalServerError, err)
 		}
 

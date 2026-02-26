@@ -167,10 +167,6 @@ func (r *postsRepository) SearchPost(ctx context.Context, title string, tx *gorm
 		return nil, result.Error
 	}
 
-	if result.RowsAffected == 0 {
-		return nil, errors.New("Post not exist")
-	}
-
 	posts := make([]post.Post, 0, len(postsDAO))
 	for _, p := range postsDAO {
 		postCurrent := make([]post.CategoriesPost, 0, len(p.Categories))
