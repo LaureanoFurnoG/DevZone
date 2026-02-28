@@ -24,7 +24,7 @@ services:
     environment:
       POSTGRES_DB: devzone
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: Laureano
+      POSTGRES_PASSWORD: secret
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
@@ -41,7 +41,7 @@ services:
       KC_DB: postgres
       KC_DB_URL_DATABASE: devzone
       KC_DB_USERNAME: postgres
-      KC_DB_PASSWORD: Laureano
+      KC_DB_PASSWORD: secret
       KC_DB_URL_HOST: kc_db
       JAVA_OPTS_APPEND: "-Xms256m -Xmx512m -XX:+UseG1GC -XX:MaxGCPauseMillis=200"
     deploy:
