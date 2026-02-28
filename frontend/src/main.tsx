@@ -1,16 +1,24 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
+import { createRoot } from "react-dom/client";
+import { StrictMode, lazy, Suspense } from "react";
+import { KcPage, type KcContext } from "./keycloak-theme/kc.gen";
 import './index.css'
-import App from './App.tsx'
-import { BrowserRouter } from 'react-router-dom'
-import { AuthProvider } from './Auth/Provider.tsx'
 
-createRoot(document.getElementById('root')!).render(
+const Application = lazy(() => import("./main.app"));
+
+createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <BrowserRouter>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
-    </BrowserRouter>
-  </StrictMode>,
-)
+    {window.kcContext ? (
+      <KcPage kcContext={window.kcContext} />
+    ) : (
+      <Suspense>
+        <Application />
+      </Suspense>
+    )}
+  </StrictMode>
+);
+
+declare global {
+  interface Window {
+    kcContext?: KcContext;
+  }
+}

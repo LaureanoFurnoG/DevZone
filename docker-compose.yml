@@ -9,7 +9,7 @@ services:
     environment:
       POSTGRES_DB: devzone
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: secret
+      POSTGRES_PASSWORD: Laureano
     volumes:
       - pgdata:/var/lib/postgresql/data
     networks:
@@ -24,7 +24,7 @@ services:
     environment:
       POSTGRES_DB: devzone
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: secret
+      POSTGRES_PASSWORD: Laureano
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
@@ -41,16 +41,23 @@ services:
       KC_DB: postgres
       KC_DB_URL_DATABASE: devzone
       KC_DB_USERNAME: postgres
-      KC_DB_PASSWORD: secret
+      KC_DB_PASSWORD: Laureano
       KC_DB_URL_HOST: kc_db
+      JAVA_OPTS_APPEND: "-Xms256m -Xmx512m -XX:+UseG1GC -XX:MaxGCPauseMillis=200"
+    deploy:
+      resources:
+        limits:
+          cpus: '1.5'      
+          memory: 768M
     ports:
       - "8081:8080"
+    volumes:
+      - ./frontend/dist_keycloak:/opt/keycloak/providers
     depends_on:
       kc_db:
         condition: service_healthy
     networks:
       - keycloak_net
-  
   backend:
     build:
       context: ./Backend/
