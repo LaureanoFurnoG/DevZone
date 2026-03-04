@@ -17,4 +17,5 @@ type RepositoryDB_Post interface {
 
 	//comments
 	CreateComment(ctx context.Context, tx *gorm.DB, comment *Comment) error
+	ListComments(ctx context.Context, id_post uint, tx *gorm.DB) ([]Comment, error)
 }

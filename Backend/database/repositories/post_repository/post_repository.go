@@ -187,7 +187,7 @@ func (r *postsRepository) SearchPost(ctx context.Context, title string, tx *gorm
 	return posts, nil
 }
 
-func (r *postsRepository) CreateComment(ctx context.Context, tx *gorm.DB, comment *post.Comment) error{
+func (r *postsRepository) CreateComment(ctx context.Context, tx *gorm.DB, comment *post.Comment) error {
 	commentDAO := models.Comment{
 		Id_user: comment.Id_user,
 		Id_Post: comment.PostID,
@@ -200,4 +200,31 @@ func (r *postsRepository) CreateComment(ctx context.Context, tx *gorm.DB, commen
 
 	comment.ID = commentDAO.ID
 	return nil
+}
+
+func (r *postsRepository) ListComments(ctx context.Context, id_post uint, tx *gorm.DB) ([]post.Comment, error) {
+	var commentDAO []models.Comment
+	result := tx.WithContext(ctx).Where("id_post = ?", id_post).
+		Find(&commentDAO)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		return nil, errors.New("The post don't have comments")
+	}
+
+	comments := make([]post.Comment, 0, len(commentDAO))
+	for _, p := range commentDAO {
+		comments = append(comments, post.Comment{
+			ID:        p.ID,
+			Id_user:   p.Id_user,
+			PostID:    p.Id_Post,
+			Content:   p.Content,
+			CreatedAt: p.CreatedAt,
+		})
+	}
+
+	return comments, nil
 }

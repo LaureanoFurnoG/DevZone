@@ -22,6 +22,7 @@ func NewHTTPHandler(g *echo.Group, svc Service, userSvc middlewares.UserSyncer, 
 
 	v1.POST("", createPostHandler(svc), kcVerifier.Middleware)
 	v1.POST("/comment/:postId", createCommentHandler(svc), kcVerifier.Middleware)
+	v1.GET("/comment/:postId", listCommentsHandler(svc))
 	v1.GET("", listPostsHandler(svc))
 	v1.GET("/searchpost/:title", listSearchPostsHandler(svc))
 	v1.GET("/:categoryId", listPostsByCategoryIDHandler(svc))
@@ -233,12 +234,41 @@ func createCommentHandler(svc Service) echo.HandlerFunc {
 		}
 
 		req.Id_post = uint(idPostParse)
-		
+
 		err = svc.CreateComment(c.Request().Context(), req.Id_user, req.Id_post, req.Content)
 		if err != nil {
 			return err
 		}
 
 		return c.JSON(http.StatusCreated, nil)
+	}
+}
+
+type listCommentsResponse struct {
+	Comments []post.Comment `json:"comments"`
+}
+type listCommentsRequest struct {
+	Id_post uint `json:"postId"`
+}
+
+func listCommentsHandler(svc Service) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var req listCommentsRequest
+		IdPostParam := c.Param("postId")
+
+		idPostParse, err := strconv.ParseUint(IdPostParam, 10, 64)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, "invalid request param")
+		}
+
+		req.Id_post = uint(idPostParse)
+
+		comments, err := svc.ListComments(c.Request().Context(), req.Id_post)
+		if err != nil {
+			return err
+		}
+		return c.JSON(http.StatusOK, listCommentsResponse{
+			Comments: comments,
+		})
 	}
 }
