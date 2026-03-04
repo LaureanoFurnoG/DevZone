@@ -18,6 +18,7 @@ type Service interface {
 	DeletePost(ctx context.Context, postId uint, authorId uuid.UUID, userID uuid.UUID) error
 	SearchPost(ctx context.Context, title string) ([]post.Post, error)
 	CreateComment(ctx context.Context, Id_user uuid.UUID, Id_post uint, content datatypes.JSON) error
+	ListComments(ctx context.Context, Id_post uint) ([]post.Comment, error)
 }
 
 type service struct {
@@ -115,6 +116,72 @@ func (s *service) enrichPostWithAuthor(ctx context.Context, p *post.Post) error 
 	return nil
 }
 
+func (s *service) enrichCommentsWithAuthor(ctx context.Context, comments []post.Comment) error {
+	seen := make(map[string]struct{})
+	var uniqueIDs []string
+	for _, p := range comments {
+		id := p.Id_user.String()
+		if _, ok := seen[id]; !ok {
+			seen[id] = struct{}{}
+			uniqueIDs = append(uniqueIDs, id)
+		}
+	}
+
+	const workers = 20
+
+	type result struct {
+		id   string
+		user *user.User
+		err  error
+	}
+
+	jobs := make(chan string, len(uniqueIDs))
+	results := make(chan result, len(uniqueIDs))
+
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
+	for w := 0; w < workers; w++ {
+		go func() {
+			for id := range jobs {
+				idUser, err := uuid.Parse(id)
+				if err != nil {
+					return
+				}
+				u, err := s.repositoryUser.GetUserByID(ctx, idUser, s.db.WithContext(ctx))
+				results <- result{id: id, user: u, err: err}
+			}
+		}()
+	}
+
+	for _, id := range uniqueIDs {
+		jobs <- id
+	}
+	close(jobs)
+
+	userMap := make(map[string]*user.User, len(uniqueIDs))
+	for range uniqueIDs {
+		r := <-results
+		if r.err != nil {
+			cancel()
+			return r.err
+		}
+		if r.user == nil {
+			continue
+		}
+		userMap[r.id] = r.user
+	}
+
+	for i := range comments {
+		if u, ok := userMap[comments[i].Id_user.String()]; ok {
+			comments[i].ProfileImage = &u.AvatarUrl
+			comments[i].Username = u.Nickname
+		}
+	}
+
+	return nil
+}
+
 func (s *service) CreatePost(ctx context.Context, categories []uint, Id_user uuid.UUID, title string, content datatypes.JSON) error {
 	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		postDAO := &post.Post{
@@ -206,4 +273,16 @@ func (s *service) SearchPost(ctx context.Context, title string) ([]post.Post, er
 		return nil, err
 	}
 	return posts, nil
+}
+
+func (s *service) ListComments(ctx context.Context, Id_post uint) ([]post.Comment, error) {
+	comments, err := s.repository.ListComments(ctx, Id_post, s.db.WithContext(ctx))
+	if err != nil {
+		return nil, err
+	}
+	if err := s.enrichCommentsWithAuthor(ctx, comments); err != nil {
+		return nil, err
+	}
+
+	return comments, nil
 }

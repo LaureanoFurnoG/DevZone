@@ -92,6 +92,21 @@ func (mr *MockRepositoryDB_PostMockRecorder) DeletePost(ctx, postId, tx interfac
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeletePost", reflect.TypeOf((*MockRepositoryDB_Post)(nil).DeletePost), ctx, postId, tx)
 }
 
+// ListComments mocks base method.
+func (m *MockRepositoryDB_Post) ListComments(ctx context.Context, id_post uint, tx *gorm.DB) ([]post.Comment, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListComments", ctx, id_post, tx)
+	ret0, _ := ret[0].([]post.Comment)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListComments indicates an expected call of ListComments.
+func (mr *MockRepositoryDB_PostMockRecorder) ListComments(ctx, id_post, tx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListComments", reflect.TypeOf((*MockRepositoryDB_Post)(nil).ListComments), ctx, id_post, tx)
+}
+
 // ListPosts mocks base method.
 func (m *MockRepositoryDB_Post) ListPosts(ctx context.Context, tx *gorm.DB) ([]post.Post, error) {
 	m.ctrl.T.Helper()
