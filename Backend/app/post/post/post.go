@@ -23,3 +23,13 @@ type Post struct {
 	CategoriesData []CategoriesPost `json:"categoriesdata"`
 	CreatedAt      time.Time        `json:"created_at"`
 }
+
+type Comment struct {
+	ID           uint           `json:"id"`
+	Id_user      uuid.UUID      `json:"id_user"`
+	ProfileImage *string        `json:"profile_image"`
+	Username     string         `json:"username"`
+	Content      datatypes.JSON `json:"content"`
+	CreatedAt    time.Time      `json:"created_at"`
+	PostID       uint           `json:"post_id"`
+}

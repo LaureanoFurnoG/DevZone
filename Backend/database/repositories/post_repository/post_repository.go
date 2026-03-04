@@ -186,3 +186,18 @@ func (r *postsRepository) SearchPost(ctx context.Context, title string, tx *gorm
 
 	return posts, nil
 }
+
+func (r *postsRepository) CreateComment(ctx context.Context, tx *gorm.DB, comment *post.Comment) error{
+	commentDAO := models.Comment{
+		Id_user: comment.Id_user,
+		Id_Post: comment.PostID,
+		Content: comment.Content,
+	}
+
+	if err := tx.WithContext(ctx).Create(&commentDAO).Error; err != nil {
+		return err
+	}
+
+	comment.ID = commentDAO.ID
+	return nil
+}

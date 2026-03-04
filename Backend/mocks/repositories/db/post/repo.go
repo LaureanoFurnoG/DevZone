@@ -50,6 +50,20 @@ func (mr *MockRepositoryDB_PostMockRecorder) AddCategorieInPost(ctx, tx, post in
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddCategorieInPost", reflect.TypeOf((*MockRepositoryDB_Post)(nil).AddCategorieInPost), ctx, tx, post)
 }
 
+// CreateComment mocks base method.
+func (m *MockRepositoryDB_Post) CreateComment(ctx context.Context, tx *gorm.DB, comment *post.Comment) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateComment", ctx, tx, comment)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateComment indicates an expected call of CreateComment.
+func (mr *MockRepositoryDB_PostMockRecorder) CreateComment(ctx, tx, comment interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateComment", reflect.TypeOf((*MockRepositoryDB_Post)(nil).CreateComment), ctx, tx, comment)
+}
+
 // CreatePost mocks base method.
 func (m *MockRepositoryDB_Post) CreatePost(ctx context.Context, tx *gorm.DB, post *post.Post) error {
 	m.ctrl.T.Helper()

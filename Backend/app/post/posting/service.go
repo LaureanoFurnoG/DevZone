@@ -17,6 +17,7 @@ type Service interface {
 	PostInformationByID(ctx context.Context, postID uint) (*post.Post, error)
 	DeletePost(ctx context.Context, postId uint, authorId uuid.UUID, userID uuid.UUID) error
 	SearchPost(ctx context.Context, title string) ([]post.Post, error)
+	CreateComment(ctx context.Context, Id_user uuid.UUID, Id_post uint, content datatypes.JSON) error
 }
 
 type service struct {
@@ -106,7 +107,7 @@ func (s *service) enrichPostWithAuthor(ctx context.Context, p *post.Post) error 
 	}
 
 	if userInfo == nil {
-		return nil 
+		return nil
 	}
 
 	p.ProfileImage = &userInfo.AvatarUrl
@@ -131,6 +132,23 @@ func (s *service) CreatePost(ctx context.Context, categories []uint, Id_user uui
 		if err != nil {
 			return err
 		}
+		return nil
+	})
+}
+
+func (s *service) CreateComment(ctx context.Context, Id_user uuid.UUID, Id_post uint, content datatypes.JSON) error {
+	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		commentDAO := &post.Comment{
+			Id_user: Id_user,
+			PostID:  Id_post,
+			Content: content,
+		}
+
+		err := s.repository.CreateComment(ctx, tx, commentDAO)
+		if err != nil {
+			return err
+		}
+
 		return nil
 	})
 }
