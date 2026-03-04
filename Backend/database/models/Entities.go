@@ -22,6 +22,15 @@ type Post struct {
 	Categories []Categories   `gorm:"many2many:relation_categories;"`
 }
 
+type Comment struct {
+	gorm.Model
+	Id_user    uuid.UUID      `gorm:"type:uuid;index"`
+	User       User           `gorm:"foreignKey:Id_user;references:ID"`
+	Id_Post    uint           `gorm:"type:uint;index"`
+	Post       Post           `gorm:"foreignKey:Id_Post;references:ID"`
+	Content    datatypes.JSON `gorm:"content"`
+}
+
 type Relation_categories struct {
 	gorm.Model
 	PostID uint `gorm:"column:post_id"`

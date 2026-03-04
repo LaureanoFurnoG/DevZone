@@ -21,6 +21,7 @@ func NewHTTPHandler(g *echo.Group, svc Service, userSvc middlewares.UserSyncer, 
 	}
 
 	v1.POST("", createPostHandler(svc), kcVerifier.Middleware)
+	v1.POST("/comment/:postId", createCommentHandler(svc), kcVerifier.Middleware)
 	v1.GET("", listPostsHandler(svc))
 	v1.GET("/searchpost/:title", listSearchPostsHandler(svc))
 	v1.GET("/:categoryId", listPostsByCategoryIDHandler(svc))
@@ -207,5 +208,37 @@ func listSearchPostsHandler(svc Service) echo.HandlerFunc {
 		return c.JSON(http.StatusOK, listSearchPostsTitleResponse{
 			Posts: posts,
 		})
+	}
+}
+
+type createCommentRequest struct {
+	Id_user uuid.UUID      `json:"id_user"`
+	Id_post uint           `json:"postId"`
+	Content datatypes.JSON `json:"content"`
+}
+
+func createCommentHandler(svc Service) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var req createCommentRequest
+
+		IdPostParam := c.Param("postId")
+
+		idPostParse, err := strconv.ParseUint(IdPostParam, 10, 64)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, "invalid request param")
+		}
+
+		if err := c.Bind(&req); err != nil {
+			return c.JSON(http.StatusBadRequest, "invalid request body")
+		}
+
+		req.Id_post = uint(idPostParse)
+		
+		err = svc.CreateComment(c.Request().Context(), req.Id_user, req.Id_post, req.Content)
+		if err != nil {
+			return err
+		}
+
+		return c.JSON(http.StatusCreated, nil)
 	}
 }
