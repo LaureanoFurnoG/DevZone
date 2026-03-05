@@ -1,7 +1,9 @@
 package posting
 
 import (
+	"errors"
 	"fmt"
+	errorsDev "github.com/laureano/devzone/errors"
 	"net/http"
 	"strconv"
 
@@ -27,7 +29,7 @@ func NewHTTPHandler(g *echo.Group, svc Service, userSvc middlewares.UserSyncer, 
 	v1.GET("/searchpost/:title", listSearchPostsHandler(svc))
 	v1.GET("/:categoryId", listPostsByCategoryIDHandler(svc))
 	v1.GET("/publishedpost/:postId", postInformationHandler(svc))
-	v1.DELETE("/:postId/:authorId", deletePostHandler(svc), kcVerifier.Middleware)
+	v1.DELETE("/:postId", deletePostHandler(svc), kcVerifier.Middleware)
 	return nil
 }
 
@@ -147,9 +149,8 @@ func postInformationHandler(svc Service) echo.HandlerFunc {
 }
 
 type deletePostRequest struct {
-	UserID   uuid.UUID
-	PostID   uint
-	AuthorID uuid.UUID
+	UserID uuid.UUID
+	PostID uint
 }
 
 func deletePostHandler(svc Service) echo.HandlerFunc {
@@ -160,27 +161,20 @@ func deletePostHandler(svc Service) echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, "issue with parse postID")
 		}
 
-		authorID, err := uuid.Parse(c.Param("authorId"))
-		if err != nil {
-			return c.JSON(http.StatusBadRequest, "issue with parse authorID")
-		}
-
 		userID, err := uuid.Parse(fmt.Sprint(c.Get("userID")))
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, "Issue with the subject in the token")
 		}
 
 		req.PostID = uint(postID)
-		req.AuthorID = authorID
 		req.UserID = userID
-		fmt.Println(req.UserID, req.AuthorID)
-		if req.AuthorID != req.UserID {
-			return c.JSON(http.StatusUnauthorized, "Wtf bro, i think that this post isn't your post")
-		}
 
-		err = svc.DeletePost(c.Request().Context(), req.PostID, req.AuthorID, req.UserID)
+		err = svc.DeletePost(c.Request().Context(), req.PostID, req.UserID)
 		if err != nil {
-			return c.JSON(http.StatusInternalServerError, err.Error())
+			if errors.Is(err, errorsDev.ErrUnauthorizedDelete) {
+				return c.JSON(http.StatusUnauthorized, map[string]string{"message": err.Error()})
+			}
+			return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
 		}
 
 		return c.JSON(http.StatusOK, "Post deleted successfully")
