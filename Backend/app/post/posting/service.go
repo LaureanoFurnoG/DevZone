@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/laureano/devzone/app/post/post"
 	"github.com/laureano/devzone/app/user/user"
+	"github.com/laureano/devzone/errors"
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
 )
@@ -15,7 +16,7 @@ type Service interface {
 	ListPosts(ctx context.Context) ([]post.Post, error)
 	ListPostsByCategoryID(ctx context.Context, categoryID uint) ([]post.Post, error)
 	PostInformationByID(ctx context.Context, postID uint) (*post.Post, error)
-	DeletePost(ctx context.Context, postId uint, authorId uuid.UUID, userID uuid.UUID) error
+	DeletePost(ctx context.Context, postId uint, userID uuid.UUID) error
 	SearchPost(ctx context.Context, title string) ([]post.Post, error)
 	CreateComment(ctx context.Context, Id_user uuid.UUID, Id_post uint, content datatypes.JSON) error
 	ListComments(ctx context.Context, Id_post uint) ([]post.Comment, error)
@@ -254,9 +255,16 @@ func (s *service) PostInformationByID(ctx context.Context, postID uint) (*post.P
 
 	return p, nil
 }
-func (s *service) DeletePost(ctx context.Context, postId uint, authorId uuid.UUID, userID uuid.UUID) error {
+func (s *service) DeletePost(ctx context.Context, postId uint, userID uuid.UUID) error {
 	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		err := s.repository.DeletePost(ctx, postId, tx)
+		postInfo, err := s.repository.PostInformation(ctx, tx, postId)
+		if err != nil {
+			return err
+		}
+		if postInfo.Id_user != userID {
+			return errors.ErrUnauthorizedDelete
+		}
+		err = s.repository.DeletePost(ctx, postId, tx)
 		if err != nil {
 			return err
 		}
