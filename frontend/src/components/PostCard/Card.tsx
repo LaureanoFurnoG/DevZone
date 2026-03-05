@@ -29,7 +29,7 @@ const PostCard = ({Id, Title, AuthorID, userSessionID, Text, Categories, ImagePr
     const DeletePost = async (e: React.MouseEvent) =>{
         e.preventDefault()
         try{
-            await axiosInstance.delete(`/devzone-api/v1/posts/${Id}/${AuthorID}`)
+            await axiosInstance.delete(`/devzone-api/v1/posts/${Id}`)
             onDelete?.(Id)
         }catch(err: any){
             console.log(err)
