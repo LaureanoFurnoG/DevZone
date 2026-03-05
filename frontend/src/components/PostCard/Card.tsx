@@ -73,7 +73,7 @@ const PostCard = ({Id, Title, AuthorID, userSessionID, Text, Categories, ImagePr
                     <p className="mt-3">{TruncateText(Text)}</p>
                     <div className="flex w-[100%] gap-5 mt-10 overflow-auto">
                        {Categories.map((element) => (
-                        <CategoriesTags Title={element.name} />
+                        <CategoriesTags key={element.id} Title={element.name} />
                        ))}
                     </div>
                 </div>
