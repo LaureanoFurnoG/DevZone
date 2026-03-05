@@ -211,10 +211,6 @@ func (r *postsRepository) ListComments(ctx context.Context, id_post uint, tx *go
 		return nil, result.Error
 	}
 
-	if result.RowsAffected == 0 {
-		return nil, errors.New("The post don't have comments")
-	}
-
 	comments := make([]post.Comment, 0, len(commentDAO))
 	for _, p := range commentDAO {
 		comments = append(comments, post.Comment{

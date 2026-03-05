@@ -9,12 +9,7 @@ import "../../../@/components/tiptap-node/list-node/list-node.scss"
 import "../../../@/components/tiptap-node/image-node/image-node.scss"
 import "../../../@/components/tiptap-node/heading-node/heading-node.scss"
 import "../../../@/components/tiptap-node/paragraph-node/paragraph-node.scss"
-import CategoriesTags from '../CategoriesTags/CategoriesTags'
 import moment from 'moment'
-type Category = {
-  id: number
-  name: string
-}
 
 type TiptapNode = {
   type: string
@@ -29,16 +24,14 @@ type TiptapDocument = {
 
 interface TiptapRendererProps {
   content?: TiptapDocument 
-  categories: Category[]
   author?: string
   profileImage?: string
   className?: string
   DatePublished: string
 }
 
-export const TiptapRenderer: React.FC<TiptapRendererProps> = ({
+export const TiptapRendererComment: React.FC<TiptapRendererProps> = ({
   content,
-  categories,
   author,
   profileImage,
   DatePublished,
@@ -50,8 +43,7 @@ export const TiptapRenderer: React.FC<TiptapRendererProps> = ({
 
     try {
       return generateHTML(content, [StarterKit])
-    } catch (error) {
-      console.error('Error:', error)
+    } catch{
       return ''
     }
   }, [content])
@@ -90,11 +82,6 @@ export const TiptapRenderer: React.FC<TiptapRendererProps> = ({
         </div>
         <div className='tiptap ProseMirror simple-editor' dangerouslySetInnerHTML={{ __html: html }}>
         
-        </div>
-        <div className='flex p-10 gap-10 border-t-1 border-white'>
-          {categories.map((category) =>(
-              <CategoriesTags key={category.id} Title={category.name} />
-          ))}
         </div>
     </div>
     

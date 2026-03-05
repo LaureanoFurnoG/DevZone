@@ -36,7 +36,6 @@ import "../../../../@/components/tiptap-node/paragraph-node/paragraph-node.scss"
 
 // --- Tiptap UI ---
 import { HeadingDropdownMenu } from "../../../../@/components/tiptap-ui/heading-dropdown-menu"
-import { ImageUploadButton } from "../../../../@/components/tiptap-ui/image-upload-button"
 import { ListDropdownMenu } from "../../../../@/components/tiptap-ui/list-dropdown-menu"
 import { BlockquoteButton } from "../../../../@/components/tiptap-ui/blockquote-button"
 import { CodeBlockButton } from "../../../../@/components/tiptap-ui/code-block-button"
@@ -137,11 +136,6 @@ const MainToolbarContent = ({
       </ToolbarGroup>
 
       <ToolbarSeparator />
-
-      <ToolbarGroup>
-        <ImageUploadButton text="Add" />
-      </ToolbarGroup>
-
       <Spacer />
 
       {isMobile && <ToolbarSeparator />}
@@ -244,6 +238,7 @@ const SimpleEditor = forwardRef((_, ref) => {
   useImperativeHandle(ref, () => ({
     getJSON: () => editor?.getJSON(),
     getHTML: () => editor?.getHTML(),
+    clearContent: () => editor?.commands.clearContent(true),
   }))
   
   return (
